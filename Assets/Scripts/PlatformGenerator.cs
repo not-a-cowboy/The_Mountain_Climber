@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NewMonoBehaviourScript : MonoBehaviour
+public class MonoBehaviourScript : MonoBehaviour
 {
     public GameObject[] platforms;
     public Transform platformGenerationPoint;
