@@ -260,7 +260,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 330585546}
   - {fileID: 1750473349}
   - {fileID: 330585546}
   m_Father: {fileID: 0}
@@ -285,7 +284,7 @@ MonoBehaviour:
   ground_check_rad: 0.2
   ground_layer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0

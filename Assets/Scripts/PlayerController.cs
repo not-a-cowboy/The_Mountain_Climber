@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-//using UnityEngine.InputSystem;   removing it as it's causing problems
+using UnityEngine.InputSystem;   // added this line
 
 public class PlayerController : MonoBehaviour
 {
@@ -18,7 +18,7 @@ public class PlayerController : MonoBehaviour
     private bool is_grounded;
 
     // New Input System variables
-    //private Vector2 moveInput;    
+    private Vector2 moveInput;    
 
     void Start()
     {
@@ -29,35 +29,31 @@ public class PlayerController : MonoBehaviour
     {
         is_grounded = Physics.CheckSphere(ground_check.position, ground_check_rad, ground_layer);
 
-        Debug.Log("Is Grounded: " + is_grounded);
-        Debug.Log("Horizontal Input: " + Input.GetAxis("Horizontal")); // just checking if inputs were working
+        // Jump (using new system)
+        // If using PlayerInput "Send Messages" mode → name must be "OnJump"
+        // If using Unity Events → hook it up in Inspector
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space) && is_grounded)
+    // Called automatically if PlayerInput is set to "Send Messages"
+    public void OnMove(InputValue value)
+    {
+        moveInput = value.Get<Vector2>();
+    }
+
+    public void OnJump()   // or OnJump(InputValue value) if you want to check phase
+    {
+        if (is_grounded)
         {
             rdb.AddForce(Vector3.up * jump_force, ForceMode.Impulse);
         }
     }
-
-    // Called automatically if PlayerInput is set to "Send Messages"
-    /*public void OnMove(InputValue value)
-    {
-        moveInput = value.Get<Vector2>();
-    } */  // Commenting out as it's causing issues, but you can re-enable if you set up the new input system
-
-    /* public void OnJump()   // or OnJump(InputValue value) if you want to check phase
-     {
-         if (is_grounded)
-         {
-             rdb.AddForce(Vector3.up * jump_force, ForceMode.Impulse);
-         }
-     } */  // Commenting out as it's causing issues, but you can re-enable if you set up the new input system
 
     void FixedUpdate()
     {
         Vector3 frwrd_movement = Vector3.forward * frwrd_speed * Time.fixedDeltaTime;
 
         // New input system horizontal movement
-        float hrzntl_input = Input.GetAxis("Horizontal"); // Replace with moveInput.x if using new input system
+        float hrzntl_input = moveInput.x;
         Vector3 hrzntl_movement = Vector3.right * hrzntl_input * hrzntl_speed * Time.fixedDeltaTime;
 
         rdb.MovePosition(rdb.position + frwrd_movement + hrzntl_movement);
