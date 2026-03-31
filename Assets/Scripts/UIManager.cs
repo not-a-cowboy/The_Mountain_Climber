@@ -1,24 +1,29 @@
 ﻿using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
-    [Header("Score UI")]
+    [Header("Live Score")]
     [SerializeField] private TextMeshProUGUI scoreText;
 
-    [Header("Game Over UI")]
+    [Header("Game Over Screen")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private TextMeshProUGUI finalScoreText;
 
-    private void OnEnable()
+    private void Start()
     {
+        // Ensure Game Over panel is hidden at the beginning
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnGameOver += ShowGameOverScreen;
         }
     }
 
-    private void OnDisable()
+    private void OnDestroy()
     {
         if (GameManager.Instance != null)
         {
@@ -28,8 +33,10 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        // Only update live score when game is running
-        if (GameManager.Instance != null && !GameManager.Instance.IsGameOver && scoreText != null)
+        // Update live score only while playing
+        if (GameManager.Instance != null &&
+            !GameManager.Instance.IsGameOver &&
+            scoreText != null)
         {
             scoreText.text = $"Score: {Mathf.FloorToInt(GameManager.Instance.Score)}";
         }
@@ -38,24 +45,19 @@ public class UIManager : MonoBehaviour
     private void ShowGameOverScreen()
     {
         if (gameOverPanel != null)
+        {
             gameOverPanel.SetActive(true);
+        }
 
         if (finalScoreText != null && GameManager.Instance != null)
         {
-            finalScoreText.text = $"Final Score: {Mathf.FloorToInt(GameManager.Instance.Score)}";
+            finalScoreText.text = $"GAME OVER\nFinal Score: {Mathf.FloorToInt(GameManager.Instance.Score)}";
         }
     }
 
-    public void Restart()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    // Call this from a Button OnClick in the Inspector
     public void RestartButtonPressed()
     {
-        if (GameManager.Instance != null)
-            GameManager.Instance.RestartGame();
+        Time.timeScale = 1f;                    // Just in case
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
