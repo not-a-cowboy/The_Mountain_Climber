@@ -1,35 +1,55 @@
 using UnityEngine;
 
-public class MonoBehaviourScript : MonoBehaviour
+public class PlatformGenerator : MonoBehaviour
 {
-    public GameObject[] platforms;
-    public Transform platformGenerationPoint;
+    [Header("Lane Generation Points")]
+    public Transform leftGenerationPoint;
+    public Transform centerGenerationPoint;
+    public Transform rightGenerationPoint;
 
-    //random number of platforms
+    [Header("Platform Prefabs - Separate per Lane")]
+    public GameObject[] leftPlatformPrefabs;
+    public GameObject[] centerPlatformPrefabs;
+    public GameObject[] rightPlatformPrefabs;
 
-    [SerializeField] public int minRandomPlatform;
-    [SerializeField] public int maxRandomPlatform;
+    [Header("Randomness")]
+    [SerializeField] private int minPlatformsPerCall = 1;
+    [SerializeField] private int maxPlatformsPerCall = 3;
 
-
+    // Called by the single trigger when the player passes through
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.gameObject.CompareTag("Player"))
-            return;
+        Debug.Log("SpawnNextSegment called!");
 
-        // Critical safety checks
-        if (platforms == null || platforms.Length == 0)
+        // Safety checks
+        if (leftPlatformPrefabs == null || leftPlatformPrefabs.Length == 0)
         {
-            Debug.LogError("Platforms array is empty or not assigned in the Inspector!");
+            Debug.LogError("Left platform prefabs array is empty!");
+            return;
+        }
+        if (centerPlatformPrefabs == null || centerPlatformPrefabs.Length == 0)
+        {
+            Debug.LogError("Center platform prefabs array is empty!");
+            return;
+        }
+        if (rightPlatformPrefabs == null || rightPlatformPrefabs.Length == 0)
+        {
+            Debug.LogError("Right platform prefabs array is empty!");
             return;
         }
 
-        // Simple and reliable random index (0 to Length-1)
-        int randomIndex = Random.Range(0, platforms.Length);
+        // Choose a random prefab for each lane independently
+        int leftIndex = Random.Range(0, leftPlatformPrefabs.Length);
+        int centerIndex = Random.Range(0, centerPlatformPrefabs.Length);
+        int rightIndex = Random.Range(0, rightPlatformPrefabs.Length);
 
-        GameObject platform = Instantiate(platforms[randomIndex],
-                                          platformGenerationPoint.position,
-                                          Quaternion.identity) as GameObject;
+        GameObject leftPrefab = leftPlatformPrefabs[leftIndex];
+        GameObject centerPrefab = centerPlatformPrefabs[centerIndex];
+        GameObject rightPrefab = rightPlatformPrefabs[rightIndex];
 
-        platform.name = "Platform";
+        // Spawn all three at exactly the same moment
+        Instantiate(leftPrefab, leftGenerationPoint.position, Quaternion.identity);
+        Instantiate(centerPrefab, centerGenerationPoint.position, Quaternion.identity);
+        Instantiate(rightPrefab, rightGenerationPoint.position, Quaternion.identity);
     }
 }
