@@ -46,6 +46,12 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    public void Restart()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
     // Call this from a Button OnClick in the Inspector
     public void RestartButtonPressed()
     {
