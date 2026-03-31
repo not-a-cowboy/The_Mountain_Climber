@@ -298,7 +298,7 @@ GameObject:
   - component: {fileID: 50477470}
   - component: {fileID: 50477469}
   m_Layer: 0
-  m_Name: Row1 (1)
+  m_Name: Row3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -771,10 +771,10 @@ MonoBehaviour:
   - {fileID: 4183823287642379481, guid: a00954ca373737340999fcdce6800140, type: 3}
   rightPlatformPrefabs:
   - {fileID: 4183823287642379481, guid: d6edddaeb34cbf34585f7a5adb716b36, type: 3}
-  - {fileID: 4183823287642379481, guid: 37e34f793e4b3dc488ae172976eae602, type: 3}
+  - {fileID: 4183823287642379481, guid: 7dbe87e199c37954397f1e4e0de15ed5, type: 3}
   - {fileID: 4183823287642379481, guid: a8308e55bf55dde4c80f90a78b3f30b1, type: 3}
-  platformLength: 20
-  visibleSets: 3
+  minPlatformsPerCall: 1
+  maxPlatformsPerCall: 3
 --- !u!65 &675051486
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -901,7 +901,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c982daf8556ba2b48887b47ad27af0f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::newMonoBehaviourScript
-  platform: {fileID: 0}
+  platform: {fileID: 50477468}
 --- !u!65 &780578075
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1028,7 +1028,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c982daf8556ba2b48887b47ad27af0f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::newMonoBehaviourScript
-  platform: {fileID: 0}
+  platform: {fileID: 1662571561}
 --- !u!65 &1140734062
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1474,7 +1474,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c982daf8556ba2b48887b47ad27af0f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::newMonoBehaviourScript
-  platform: {fileID: 0}
+  platform: {fileID: 1333530424}
 --- !u!65 &1492120935
 BoxCollider:
   m_ObjectHideFlags: 0
