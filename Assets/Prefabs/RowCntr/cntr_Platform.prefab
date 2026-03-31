@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 163014462620761376}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: CenterGenerationPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2248497954662251433}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlatformGeneratorPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5252339772110400998}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: RightGenereationPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4402938688189748153}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: LeftGenerationPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 2086748118569337238}
   - component: {fileID: 1857738399665632186}
   - component: {fileID: 7321577640615773126}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlatformGenerator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 3818961708672319402}
   - component: {fileID: 7415534372455040934}
   - component: {fileID: 3511789318162714197}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: cntr_Platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -398,7 +398,7 @@ GameObject:
   - component: {fileID: 4720813415150242429}
   - component: {fileID: 4592562384034712336}
   - component: {fileID: 6814104562202328023}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlatformDestroyer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -521,7 +521,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8300409051667366173}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlatformGeneratorPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -555,7 +555,7 @@ GameObject:
   - component: {fileID: 1541112049456320883}
   - component: {fileID: 5263100033180542829}
   - component: {fileID: 6589916758086710516}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

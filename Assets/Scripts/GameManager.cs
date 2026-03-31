@@ -1,35 +1,56 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("UI Elements")]
-    public TextMeshProUGUI score_text;
-    public TextMeshProUGUI final_score_text;
-    public GameObject game_over_panel;
+    public static GameManager Instance { get; private set; }
 
-    private float score;
-    private bool is_game_over;
+    public float Score { get; private set; }
+    public bool IsGameOver { get; private set; }
 
-    void Update()
+    public event System.Action OnGameOver;
+
+    private void Awake()
     {
-        if (!is_game_over)
+        // Proper singleton with destruction of duplicates
+        if (Instance != null && Instance != this)
         {
-            score += Time.deltaTime;
-            score_text.text = "Score: " + Mathf.FloorToInt(score);
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
+
+    private void Start()
+    {
+        ResetGame();
+    }
+
+    private void Update()
+    {
+        if (!IsGameOver)
+        {
+            Score += Time.deltaTime;
         }
     }
 
     public void PlayerDied()
     {
-        is_game_over = true;
-        game_over_panel.SetActive(true);
-        final_score_text.text = "Final Score: " + Mathf.FloorToInt(score);
+        if (IsGameOver) return;
+
+        IsGameOver = true;
+        OnGameOver?.Invoke();
     }
 
     public void RestartGame()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public void ResetGame()
+    {
+        Score = 0f;
+        IsGameOver = false;
     }
 }

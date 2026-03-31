@@ -3,103 +3,115 @@
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float forwardSpeed = 5f;
-    [Tooltip("How far the player moves sideways with one swipe/keypress")]
-    public float horizontalSwipeDistance = 4f;
-    public float jumpForce = 7f;
-    public float laneLimit = 4f;
+    [SerializeField] private float baseForwardSpeed = 8f; 
+    [SerializeField] private float horizontalLaneDistance = 3f;
+    [SerializeField] private float laneSwitchDuration = 0.15f;
+    [SerializeField] private float jumpForce = 8f;
+    [SerializeField] private float laneLimit = 3f;    
 
-    [Header("Ground Check Settings")]
-    public Transform groundCheck;
-    public float groundCheckRadius = 0.2f;
-    public LayerMask groundLayer;
+    [Header("Ground Check")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.25f;
+    [SerializeField] private LayerMask groundLayer;
 
     [Header("Jump Settings")]
-    public float coyoteTime = 0.15f;   // Grace period to jump after leaving ground
+    [SerializeField] private float coyoteTime = 0.15f;
 
     private Rigidbody rb;
-
     private bool isGrounded;
     private float coyoteTimeCounter;
 
-    private float timeSinceStart;
-    private float nextSpeedMilestone = 10f;
+    private float targetXPosition = 0f;
+    private float currentLaneSwitchTime = 0f;
 
-    // Triggers for snappy left/right movement (simulating swipe)
-    private bool moveLeft;
-    private bool moveRight;
-
-    void Start()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        // Optional: Freeze rotation so player doesn't tumble
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        rb.constraints = RigidbodyConstraints.FreezeRotation; // Prevent tumbling
     }
 
-    void Update()
+    private void Start()
     {
-        // --- Input ---
+        targetXPosition = 0f; // Start in middle lane
+    }
+
+    private void Update()
+    {
         if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            coyoteTimeCounter = 0f;   // Prevent double jumps
+            coyoteTimeCounter = 0f;
         }
 
+        // Lane switching (A/D or Left/Right arrows)
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            moveLeft = true;
+            targetXPosition -= horizontalLaneDistance;
         }
-        else if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
         {
-            moveRight = true;
+            targetXPosition += horizontalLaneDistance;
         }
 
-        // Speed progression over time
-        timeSinceStart += Time.deltaTime;
-        if (timeSinceStart >= nextSpeedMilestone)
-        {
-            forwardSpeed += 0.5f;
-            nextSpeedMilestone += 10f;
-        }
+        targetXPosition = Mathf.Clamp(targetXPosition, -laneLimit, laneLimit);
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        // Ground check (must be in FixedUpdate for reliability)
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+            return; // Stop movement when game is over
+
+        // Ground check
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
 
-        // Coyote time handling
+        // Coyote time
         if (isGrounded)
-        {
             coyoteTimeCounter = coyoteTime;
-        }
         else
-        {
             coyoteTimeCounter -= Time.fixedDeltaTime;
-        }
 
-        // Continuous forward movement
-        Vector3 forwardMovement = Vector3.forward * forwardSpeed * Time.fixedDeltaTime;
-
-        // Snappy horizontal swipe
-        Vector3 horizontalMovement = Vector3.zero;
-        if (moveLeft)
+        // Get current forward speed from GameManager
+        float currentForwardSpeed = baseForwardSpeed;
+        if (GameManager.Instance != null)
         {
-            horizontalMovement = Vector3.left * horizontalSwipeDistance;
-            moveLeft = false;
+            currentForwardSpeed = baseForwardSpeed + (GameManager.Instance.Score * 0.05f); // Gradual increase
         }
-        else if (moveRight)
+
+        // Forward movement
+        Vector3 forwardMovement = Vector3.forward * currentForwardSpeed * Time.fixedDeltaTime;
+
+        // Smooth lane switching
+        currentLaneSwitchTime += Time.fixedDeltaTime;
+        float t = Mathf.Clamp01(currentLaneSwitchTime / laneSwitchDuration);
+        float newX = Mathf.Lerp(rb.position.x, targetXPosition, t);
+
+        if (t >= 1f)
+            currentLaneSwitchTime = 0f; // Reset timer after reaching target
+
+        // Apply movement using MovePosition
+        Vector3 newPosition = rb.position + forwardMovement;
+        newPosition.x = newX;
+        newPosition.y = rb.position.y;           
+
+        rb.MovePosition(newPosition);
+    }
+
+    // Death handling - called from collision or trigger
+    public void Die()
+    {
+        gameObject.SetActive(false);
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlayerDied();
+        else
+            Debug.LogError("GameManager.Instance is missing!");
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
-            horizontalMovement = Vector3.right * horizontalSwipeDistance;
-            moveRight = false;
+            Die();
         }
-
-        // Apply movement
-        rb.MovePosition(rb.position + forwardMovement + horizontalMovement);
-
-        // Clamp to lane limits
-        Vector3 clampedPos = rb.position;
-        clampedPos.x = Mathf.Clamp(clampedPos.x, -laneLimit, laneLimit);
-        rb.position = clampedPos;
     }
 }
