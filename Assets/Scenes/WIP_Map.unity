@@ -754,15 +754,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 241b48d4c4f77824aba50e1e77f4e8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  frwrd_speed: 5
-  hrzntl_speed: 5
-  jump_force: 7
-  lane_limit: 4
-  ground_check: {fileID: 157976018}
-  ground_check_rad: 0.2
-  ground_layer:
+  forwardSpeed: 5
+  horizontalSwipeDistance: 3
+  jumpForce: 7
+  laneLimit: 3
+  groundCheck: {fileID: 157976018}
+  groundCheckRadius: 0.2
+  groundLayer:
     serializedVersion: 2
     m_Bits: 0
+  coyoteTime: 0.15
 --- !u!54 &799875613
 Rigidbody:
   m_ObjectHideFlags: 0

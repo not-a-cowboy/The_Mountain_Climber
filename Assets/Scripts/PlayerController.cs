@@ -3,43 +3,48 @@
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float frwrd_speed = 5f;
+    public float forwardSpeed = 5f;
     [Tooltip("How far the player moves sideways with one swipe/keypress")]
-    public float hrzntl_speed = 4f;
-    public float jump_force = 7f;
-    public float lane_limit = 4f;
+    public float horizontalSwipeDistance = 4f;
+    public float jumpForce = 7f;
+    public float laneLimit = 4f;
 
     [Header("Ground Check Settings")]
-    public Transform ground_check;
-    public float ground_check_rad = 0.2f;
-    public LayerMask ground_layer;
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.2f;
+    public LayerMask groundLayer;
 
-    private Rigidbody rdb;
-    private bool is_grounded;
-    private float TimeSinceStart;
-    private float TimeMilestone;
+    [Header("Jump Settings")]
+    public float coyoteTime = 0.15f;   // Grace period to jump after leaving ground
 
-    // Trigger variables for the snappy movement on key press (simulating a swipe)
+    private Rigidbody rb;
+
+    private bool isGrounded;
+    private float coyoteTimeCounter;
+
+    private float timeSinceStart;
+    private float nextSpeedMilestone = 10f;
+
+    // Triggers for snappy left/right movement (simulating swipe)
     private bool moveLeft;
     private bool moveRight;
 
     void Start()
     {
-        rdb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        // Optional: Freeze rotation so player doesn't tumble
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     void Update()
     {
-        is_grounded = Physics.CheckSphere(ground_check.position, ground_check_rad, ground_layer);
-
-        // Jump Input
-        if (Input.GetKeyDown(KeyCode.Space) && is_grounded)
+        // --- Input ---
+        if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
-            rdb.AddForce(Vector3.up * jump_force, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            coyoteTimeCounter = 0f;   // Prevent double jumps
         }
 
-
-        // GetKeyDown only fires once per press, mimicking a quick screen swipe
         if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
         {
             moveLeft = true;
@@ -49,41 +54,52 @@ public class PlayerController : MonoBehaviour
             moveRight = true;
         }
 
-        // Speed Progression
-        TimeSinceStart += Time.deltaTime;
-        if (TimeSinceStart >= TimeMilestone)
+        // Speed progression over time
+        timeSinceStart += Time.deltaTime;
+        if (timeSinceStart >= nextSpeedMilestone)
         {
-            frwrd_speed += 0.5f;
-            TimeMilestone += 10f;
+            forwardSpeed += 0.5f;
+            nextSpeedMilestone += 10f;
         }
     }
 
     void FixedUpdate()
     {
+        // Ground check (must be in FixedUpdate for reliability)
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+        // Coyote time handling
+        if (isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.fixedDeltaTime;
+        }
+
         // Continuous forward movement
-        Vector3 frwrd_movement = Vector3.forward * frwrd_speed * Time.fixedDeltaTime;
+        Vector3 forwardMovement = Vector3.forward * forwardSpeed * Time.fixedDeltaTime;
 
-        // --- NEW: Apply Horizontal Swipe ---
-        Vector3 hrzntl_movement = Vector3.zero;
-
+        // Snappy horizontal swipe
+        Vector3 horizontalMovement = Vector3.zero;
         if (moveLeft)
         {
-
-            hrzntl_movement = Vector3.left * hrzntl_speed;
-            moveLeft = false; // Reset the trigger
+            horizontalMovement = Vector3.left * horizontalSwipeDistance;
+            moveLeft = false;
         }
         else if (moveRight)
         {
-            hrzntl_movement = Vector3.right * hrzntl_speed;
-            moveRight = false; // Reset the trigger
+            horizontalMovement = Vector3.right * horizontalSwipeDistance;
+            moveRight = false;
         }
 
+        // Apply movement
+        rb.MovePosition(rb.position + forwardMovement + horizontalMovement);
 
-        rdb.MovePosition(rdb.position + frwrd_movement + hrzntl_movement);
-
-        // Clamp to lanes to ensure they don't swipe off the map
-        Vector3 clamped_pos = rdb.position;
-        clamped_pos.x = Mathf.Clamp(clamped_pos.x, -lane_limit, lane_limit);
-        rdb.position = clamped_pos;
+        // Clamp to lane limits
+        Vector3 clampedPos = rb.position;
+        clampedPos.x = Mathf.Clamp(clampedPos.x, -laneLimit, laneLimit);
+        rb.position = clampedPos;
     }
 }
