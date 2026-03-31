@@ -1,24 +1,24 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
     public float Score { get; private set; }
+    public float ScoreMultiplier { get; private set; } = 1f;
     public bool IsGameOver { get; private set; }
 
     public event System.Action OnGameOver;
 
     private void Awake()
     {
-        // Proper singleton with destruction of duplicates
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-
         Instance = this;
     }
 
@@ -31,14 +31,26 @@ public class GameManager : MonoBehaviour
     {
         if (!IsGameOver)
         {
-            Score += Time.deltaTime;
+            Score += Time.deltaTime * ScoreMultiplier;
         }
+    }
+
+    public void ActivateScoreMultiplier(float duration, float multiplier)
+    {
+        StartCoroutine(ApplyScoreMultiplier(duration, multiplier));
+    }
+
+    private IEnumerator ApplyScoreMultiplier(float duration, float multiplier)
+    {
+        float original = ScoreMultiplier;
+        ScoreMultiplier = multiplier;
+        yield return new WaitForSeconds(duration);
+        ScoreMultiplier = original;
     }
 
     public void PlayerDied()
     {
         if (IsGameOver) return;
-
         IsGameOver = true;
         OnGameOver?.Invoke();
     }
@@ -51,6 +63,7 @@ public class GameManager : MonoBehaviour
     public void ResetGame()
     {
         Score = 0f;
+        ScoreMultiplier = 1f;
         IsGameOver = false;
     }
 }

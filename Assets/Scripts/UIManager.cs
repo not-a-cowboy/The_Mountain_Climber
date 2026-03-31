@@ -4,7 +4,7 @@ using TMPro;
 public class UIManager : MonoBehaviour
 {
     [Header("Score UI")]
-    [SerializeField] private TextMeshProUGUI scoreText;           // Live score during game
+    [SerializeField] private TextMeshProUGUI scoreText;
 
     [Header("Game Over UI")]
     [SerializeField] private GameObject gameOverPanel;
