@@ -12,44 +12,54 @@ public class PlatformGenerator : MonoBehaviour
     public GameObject[] centerPlatformPrefabs;
     public GameObject[] rightPlatformPrefabs;
 
+    [Header("Power-Ups (Drag your 3 PowerUp prefabs here)")]
+    public GameObject[] powerUpPrefabs;
+
+    [SerializeField] private float powerUpSpawnChance = 0.35f;
+    [SerializeField] private float powerUpHeightAbovePlatform = 1.2f;
+
     [Header("Randomness")]
     [SerializeField] private int minPlatformsPerCall = 1;
     [SerializeField] private int maxPlatformsPerCall = 3;
 
-    // Called by the single trigger when the player passes through
+    [SerializeField] private float segmentLength = 30f;
+
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("SpawnNextSegment called!");
+        if (!other.CompareTag("Player")) return;
 
-        // Safety checks
-        if (leftPlatformPrefabs == null || leftPlatformPrefabs.Length == 0)
+        if (leftPlatformPrefabs == null || leftPlatformPrefabs.Length == 0 ||
+            centerPlatformPrefabs == null || centerPlatformPrefabs.Length == 0 ||
+            rightPlatformPrefabs == null || rightPlatformPrefabs.Length == 0)
         {
-            Debug.LogError("Left platform prefabs array is empty!");
-            return;
-        }
-        if (centerPlatformPrefabs == null || centerPlatformPrefabs.Length == 0)
-        {
-            Debug.LogError("Center platform prefabs array is empty!");
-            return;
-        }
-        if (rightPlatformPrefabs == null || rightPlatformPrefabs.Length == 0)
-        {
-            Debug.LogError("Right platform prefabs array is empty!");
+            Debug.LogError("One or more platform prefab arrays are empty!");
             return;
         }
 
-        // Choose a random prefab for each lane independently
-        int leftIndex = Random.Range(0, leftPlatformPrefabs.Length);
-        int centerIndex = Random.Range(0, centerPlatformPrefabs.Length);
-        int rightIndex = Random.Range(0, rightPlatformPrefabs.Length);
+        GameObject leftPlat = Instantiate(leftPlatformPrefabs[Random.Range(0, leftPlatformPrefabs.Length)],
+                                          leftGenerationPoint.position, Quaternion.identity);
 
-        GameObject leftPrefab = leftPlatformPrefabs[leftIndex];
-        GameObject centerPrefab = centerPlatformPrefabs[centerIndex];
-        GameObject rightPrefab = rightPlatformPrefabs[rightIndex];
+        GameObject centerPlat = Instantiate(centerPlatformPrefabs[Random.Range(0, centerPlatformPrefabs.Length)],
+                                            centerGenerationPoint.position, Quaternion.identity);
 
-        // Spawn all three at exactly the same moment
-        Instantiate(leftPrefab, leftGenerationPoint.position, Quaternion.identity);
-        Instantiate(centerPrefab, centerGenerationPoint.position, Quaternion.identity);
-        Instantiate(rightPrefab, rightGenerationPoint.position, Quaternion.identity);
+        GameObject rightPlat = Instantiate(rightPlatformPrefabs[Random.Range(0, rightPlatformPrefabs.Length)],
+                                           rightGenerationPoint.position, Quaternion.identity);
+
+        if (powerUpPrefabs != null && powerUpPrefabs.Length > 0 && Random.value < powerUpSpawnChance)
+        {
+            GameObject[] platforms = { leftPlat, centerPlat, rightPlat };
+            GameObject chosenPlatform = platforms[Random.Range(0, platforms.Length)];
+
+            Vector3 spawnPos = chosenPlatform.transform.position + Vector3.up * powerUpHeightAbovePlatform;
+
+            GameObject powerUpInstance = Instantiate(powerUpPrefabs[Random.Range(0, powerUpPrefabs.Length)],
+                                                     spawnPos, Quaternion.identity);
+
+            powerUpInstance.transform.SetParent(chosenPlatform.transform);
+        }
+
+        leftGenerationPoint.position += Vector3.forward * segmentLength;
+        centerGenerationPoint.position += Vector3.forward * segmentLength;
+        rightGenerationPoint.position += Vector3.forward * segmentLength;
     }
 }

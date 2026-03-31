@@ -654,6 +654,12 @@ MonoBehaviour:
   - {fileID: 4183823287642379481, guid: d6edddaeb34cbf34585f7a5adb716b36, type: 3}
   - {fileID: 4183823287642379481, guid: 7dbe87e199c37954397f1e4e0de15ed5, type: 3}
   - {fileID: 4183823287642379481, guid: a8308e55bf55dde4c80f90a78b3f30b1, type: 3}
+  powerUpPrefabs:
+  - {fileID: 4183823287642379481, guid: 7e542c557a001bd4ebae923bdb06249e, type: 3}
+  - {fileID: 4183823287642379481, guid: 14ea6f3b30a46c141b537e87b86df3f2, type: 3}
+  - {fileID: 4183823287642379481, guid: 30a0347dc782e32468ec175d6e9c763d, type: 3}
+  powerUpSpawnChance: 0.35
+  powerUpHeightAbovePlatform: 1.2
   minPlatformsPerCall: 1
   maxPlatformsPerCall: 3
 --- !u!1 &9220488617151882532
