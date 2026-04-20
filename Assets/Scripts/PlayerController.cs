@@ -1,70 +1,140 @@
 ﻿using UnityEngine;
-//using UnityEngine.InputSystem;   removing it as it's causing problems
+using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    public float frwrd_speed = 5f;
-    public float hrzntl_speed = 5f;
-    public float jump_force = 7f;
-    public float lane_limit = 4f;
+    [SerializeField] private float baseForwardSpeed = 8f;
+    [SerializeField] private float horizontalLaneDistance = 3f;
+    [SerializeField] private float laneSwitchDuration = 0.15f;
+    [SerializeField] private float laneLimit = 3f;
 
-    [Header("Ground Check Settings")]
-    public Transform ground_check;
-    public float ground_check_rad = 0.2f;
-    public LayerMask ground_layer;
+    [Header("Jump Settings")]
+    [SerializeField] private float baseJumpForce = 8f;
+    [SerializeField] private float coyoteTime = 0.15f;
 
-    private Rigidbody rdb;
-    private bool is_grounded;
+    [Header("Ground Check")]
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.25f;
+    [SerializeField] private LayerMask groundLayer;
 
-    // New Input System variables
-    //private Vector2 moveInput;    
+    private Rigidbody rb;
+    private bool isGrounded;
+    private float coyoteTimeCounter;
+    private float targetXPosition = 0f;
+    private float currentLaneSwitchTime = 0f;
 
-    void Start()
+    // Power-up variables
+    private float currentJumpForce;
+    private bool isInvulnerable = false;
+
+    private void Awake()
     {
-        rdb = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        currentJumpForce = baseJumpForce;
     }
 
-    void Update()
+    private void Start()
     {
-        is_grounded = Physics.CheckSphere(ground_check.position, ground_check_rad, ground_layer);
+        targetXPosition = 0f;
+    }
 
-        Debug.Log("Is Grounded: " + is_grounded);
-        Debug.Log("Horizontal Input: " + Input.GetAxis("Horizontal")); // just checking if inputs were working
-
-        if (Input.GetKeyDown(KeyCode.Space) && is_grounded)
+    private void Update()
+    {
+        // Jump
+        if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
         {
-            rdb.AddForce(Vector3.up * jump_force, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * currentJumpForce, ForceMode.Impulse);
+            coyoteTimeCounter = 0f;
+        }
+
+        // Lane switching
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+            targetXPosition -= horizontalLaneDistance;
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+            targetXPosition += horizontalLaneDistance;
+
+        targetXPosition = Mathf.Clamp(targetXPosition, -laneLimit, laneLimit);
+    }
+
+    private void FixedUpdate()
+    {
+        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
+            return;
+
+        // Ground check + coyote time
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter -= Time.fixedDeltaTime;
+
+        // Forward movement
+        float currentForwardSpeed = baseForwardSpeed;
+        if (GameManager.Instance != null)
+            currentForwardSpeed = baseJumpForce + (GameManager.Instance.Score * 0.05f);
+
+        Vector3 forwardMovement = Vector3.forward * currentForwardSpeed * Time.fixedDeltaTime;
+
+        currentLaneSwitchTime += Time.fixedDeltaTime;
+        float t = Mathf.Clamp01(currentLaneSwitchTime / laneSwitchDuration);
+        float newX = Mathf.Lerp(rb.position.x, targetXPosition, t);
+        if (t >= 1f) currentLaneSwitchTime = 0f;
+
+        Vector3 newPosition = rb.position + forwardMovement;
+        newPosition.x = newX;
+        newPosition.y = rb.position.y;
+        rb.MovePosition(newPosition);
+    }
+
+    public void ActivatePowerUp(PowerUpType type, float duration, float jumpMult, float scoreMult)
+    {
+        switch (type)
+        {
+            case PowerUpType.HigherJump:
+                StartCoroutine(ApplyHigherJump(duration, jumpMult));
+                break;
+
+            case PowerUpType.Invulnerability:
+                StartCoroutine(ApplyInvulnerability(duration));
+                break;
+
+            case PowerUpType.ScoreMultiplier:
+                if (GameManager.Instance != null)
+                    GameManager.Instance.ActivateScoreMultiplier(duration, scoreMult);
+                break;
         }
     }
 
-    // Called automatically if PlayerInput is set to "Send Messages"
-    /*public void OnMove(InputValue value)
+    private IEnumerator ApplyHigherJump(float duration, float multiplier)
     {
-        moveInput = value.Get<Vector2>();
-    } */  // Commenting out as it's causing issues, but you can re-enable if you set up the new input system
+        float original = currentJumpForce;
+        currentJumpForce = baseJumpForce * multiplier;
+        yield return new WaitForSeconds(duration);
+        currentJumpForce = original;
+    }
 
-    /* public void OnJump()   // or OnJump(InputValue value) if you want to check phase
-     {
-         if (is_grounded)
-         {
-             rdb.AddForce(Vector3.up * jump_force, ForceMode.Impulse);
-         }
-     } */  // Commenting out as it's causing issues, but you can re-enable if you set up the new input system
-
-    void FixedUpdate()
+    private IEnumerator ApplyInvulnerability(float duration)
     {
-        Vector3 frwrd_movement = Vector3.forward * frwrd_speed * Time.fixedDeltaTime;
+        isInvulnerable = true;
+        yield return new WaitForSeconds(duration);
+        isInvulnerable = false;
+    }
 
-        // New input system horizontal movement
-        float hrzntl_input = Input.GetAxis("Horizontal"); // Replace with moveInput.x if using new input system
-        Vector3 hrzntl_movement = Vector3.right * hrzntl_input * hrzntl_speed * Time.fixedDeltaTime;
+    // Death only happens if NOT invulnerable
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Obstacle") && !isInvulnerable)
+        {
+            Die();
+        }
+    }
 
-        rdb.MovePosition(rdb.position + frwrd_movement + hrzntl_movement);
-
-        // Clamp
-        Vector3 clamped_pos = rdb.position;
-        clamped_pos.x = Mathf.Clamp(clamped_pos.x, -lane_limit, lane_limit);
-        rdb.position = clamped_pos;
+    public void Die()
+    {
+        gameObject.SetActive(false);
+        if (GameManager.Instance != null)
+            GameManager.Instance.PlayerDied();
     }
 }
