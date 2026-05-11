@@ -1,140 +1,89 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [SerializeField] private float baseForwardSpeed = 8f;
-    [SerializeField] private float horizontalLaneDistance = 3f;
-    [SerializeField] private float laneSwitchDuration = 0.15f;
-    [SerializeField] private float laneLimit = 3f;
-
-    [Header("Jump Settings")]
-    [SerializeField] private float baseJumpForce = 8f;
-    [SerializeField] private float coyoteTime = 0.15f;
+    PlayerInputActions playerInput;
+    [SerializeField] private float speed;
+    [SerializeField] private float jumpSpeed;
+    [SerializeField] private float forwardSpeed;
+    [SerializeField] private float laneSlideSpeed = 10f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundCheckRadius = 0.25f;
+    [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
 
     private Rigidbody rb;
+    private InputAction moveAction;
     private bool isGrounded;
-    private float coyoteTimeCounter;
-    private float targetXPosition = 0f;
-    private float currentLaneSwitchTime = 0f;
 
-    // Power-up variables
-    private float currentJumpForce;
-    private bool isInvulnerable = false;
+    private int currentLane = 0;
+    private float targetX = 0f;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        rb.constraints = RigidbodyConstraints.FreezeRotation;
-        currentJumpForce = baseJumpForce;
+        playerInput = new PlayerInputActions();
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        targetXPosition = 0f;
+        playerInput.Player.Jump.performed += OnJump;
+        playerInput.Player.Move.performed += OnMove;
+        moveAction = playerInput.Player.Move;
+        playerInput.Enable();
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        // Jump
-        if (Input.GetKeyDown(KeyCode.Space) && coyoteTimeCounter > 0f)
+        playerInput.Player.Jump.performed -= OnJump;
+        playerInput.Player.Move.performed -= OnMove;
+        playerInput.Disable();
+    }
+
+    private void OnJump(InputAction.CallbackContext ctx)
+    {
+        if (!isGrounded) return;
+
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f); // clear Y and Z before launch
+        rb.AddForce(new Vector3(0f, jumpSpeed * 0.4f, jumpSpeed), ForceMode.Impulse);
+    }
+
+    private void OnMove(InputAction.CallbackContext ctx)
+    {
+        Vector2 input = ctx.ReadValue<Vector2>();
+
+        if (input.x > 0.5f && currentLane < 1)
         {
-            rb.AddForce(Vector3.up * currentJumpForce, ForceMode.Impulse);
-            coyoteTimeCounter = 0f;
+            currentLane++;
+            targetX = currentLane * 3f;
         }
-
-        // Lane switching
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-            targetXPosition -= horizontalLaneDistance;
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-            targetXPosition += horizontalLaneDistance;
-
-        targetXPosition = Mathf.Clamp(targetXPosition, -laneLimit, laneLimit);
+        else if (input.x < -0.5f && currentLane > -1)
+        {
+            currentLane--;
+            targetX = currentLane * 3f;
+        }
     }
 
     private void FixedUpdate()
     {
-        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
-            return;
-
-        // Ground check + coyote time
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
-        if (isGrounded)
-            coyoteTimeCounter = coyoteTime;
-        else
-            coyoteTimeCounter -= Time.fixedDeltaTime;
 
-        // Forward movement
-        float currentForwardSpeed = baseForwardSpeed;
-        if (GameManager.Instance != null)
-            currentForwardSpeed = baseJumpForce + (GameManager.Instance.Score * 0.05f);
+        float newX = Mathf.MoveTowards(rb.position.x, targetX, laneSlideSpeed * Time.fixedDeltaTime);
 
-        Vector3 forwardMovement = Vector3.forward * currentForwardSpeed * Time.fixedDeltaTime;
-
-        currentLaneSwitchTime += Time.fixedDeltaTime;
-        float t = Mathf.Clamp01(currentLaneSwitchTime / laneSwitchDuration);
-        float newX = Mathf.Lerp(rb.position.x, targetXPosition, t);
-        if (t >= 1f) currentLaneSwitchTime = 0f;
-
-        Vector3 newPosition = rb.position + forwardMovement;
-        newPosition.x = newX;
-        newPosition.y = rb.position.y;
-        rb.MovePosition(newPosition);
+        rb.linearVelocity = new Vector3(
+            (newX - rb.position.x) / Time.fixedDeltaTime,
+            rb.linearVelocity.y,
+            forwardSpeed
+        );
     }
 
-    public void ActivatePowerUp(PowerUpType type, float duration, float jumpMult, float scoreMult)
+    private void OnDrawGizmosSelected()
     {
-        switch (type)
-        {
-            case PowerUpType.HigherJump:
-                StartCoroutine(ApplyHigherJump(duration, jumpMult));
-                break;
-
-            case PowerUpType.Invulnerability:
-                StartCoroutine(ApplyInvulnerability(duration));
-                break;
-
-            case PowerUpType.ScoreMultiplier:
-                if (GameManager.Instance != null)
-                    GameManager.Instance.ActivateScoreMultiplier(duration, scoreMult);
-                break;
-        }
-    }
-
-    private IEnumerator ApplyHigherJump(float duration, float multiplier)
-    {
-        float original = currentJumpForce;
-        currentJumpForce = baseJumpForce * multiplier;
-        yield return new WaitForSeconds(duration);
-        currentJumpForce = original;
-    }
-
-    private IEnumerator ApplyInvulnerability(float duration)
-    {
-        isInvulnerable = true;
-        yield return new WaitForSeconds(duration);
-        isInvulnerable = false;
-    }
-
-    // Death only happens if NOT invulnerable
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.CompareTag("Obstacle") && !isInvulnerable)
-        {
-            Die();
-        }
-    }
-
-    public void Die()
-    {
-        gameObject.SetActive(false);
-        if (GameManager.Instance != null)
-            GameManager.Instance.PlayerDied();
+        if (groundCheck == null) return;
+        Gizmos.color = isGrounded ? Color.green : Color.red;
+        Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
     }
 }

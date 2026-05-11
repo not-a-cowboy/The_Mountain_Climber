@@ -255,15 +255,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 88514884}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.35355, y: 0.84, z: 0.35355}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1750473349}
   - {fileID: 330585546}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!114 &88514890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -276,13 +276,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 241b48d4c4f77824aba50e1e77f4e8a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  frwrd_speed: 5
-  hrzntl_speed: 5
-  jump_force: 7
-  lane_limit: 4
-  ground_check: {fileID: 1750473349}
-  ground_check_rad: 0.2
-  ground_layer:
+  baseForwardSpeed: 8
+  horizontalLaneDistance: 3
+  laneSwitchDuration: 0.15
+  laneLimit: 3
+  baseJumpForce: 8
+  coyoteTime: 0.15
+  groundCheck: {fileID: 1750473349}
+  groundCheckRadius: 0.25
+  groundLayer:
     serializedVersion: 2
     m_Bits: 0
 --- !u!1 &330585543
@@ -371,13 +373,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.35355, y: 0.16000003, z: -10.35355}
+  m_LocalRotation: {x: -0.56904256, y: -0, z: -0, w: 0.8223081}
+  m_LocalPosition: {x: -0.35355, y: -7.8000736, z: -7.210064}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 88514889}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -69.367, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
   m_ObjectHideFlags: 0
