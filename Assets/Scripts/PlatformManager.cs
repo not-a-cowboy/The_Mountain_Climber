@@ -6,7 +6,7 @@ public class PlatformManager : MonoBehaviour
     public static PlatformManager Instance { get; private set; }
 
     [Header("Prefabs")]
-    public GameObject[] platformPrefabs;
+    public GameObject platformPrefabs;
 
     [Header("Initial Platforms (in order: Starter, Runner1, Runner2)")]
     public GameObject[] initialPlatforms;
@@ -28,31 +28,10 @@ public class PlatformManager : MonoBehaviour
     }
 
 
-    public void SpawnNext()
+    public void SpawnNext(Transform platformGenerationPoint)
     {
-        GameObject furthest = activePlatforms.Last.Value;
-
-        Transform spawnPoint = furthest.transform.Find("platformGenerationPoint");
-        if (spawnPoint == null)
-        {
-            foreach (Transform t in furthest.GetComponentsInChildren<Transform>())
-            {
-                if (t.name == "platformGenerationPoint")
-                {
-                    spawnPoint = t;
-                    break;
-                }
-            }
-        }
-
-        if (spawnPoint == null)
-        {
-            Debug.LogError("No platformGenerationPoint found on " + furthest.name);
-            return;
-        }
-
-        GameObject prefab = platformPrefabs[Random.Range(0, platformPrefabs.Length)];
-        GameObject newPlatform = Instantiate(prefab, spawnPoint.position, Quaternion.identity) as GameObject;
+        GameObject newPlatform = Instantiate(platformPrefabs, platformGenerationPoint.position, Quaternion.identity) as GameObject;
+        newPlatform.name = "Platform";
 
         newPlatform.name = "PlatformRunner";
 

@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1652749018054603258}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 5.92, z: 0.335}
+  m_LocalPosition: {x: 0, y: 5.92, z: -0.367}
   m_LocalScale: {x: 0.9138889, y: 12.42041, z: 0.030479334}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -126,11 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57f25ca93eb926d48943e86f5d395c0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlatformGenerator
-  thePlatforms:
-  - {fileID: 3522748738960144463, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
   platformGenerationPoint: {fileID: 4479015722610963196}
-  minPlatforms: 0
-  maxPlatforms: 0
 --- !u!1 &1844376328546779550
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,7 +152,7 @@ Transform:
   m_GameObject: {fileID: 1844376328546779550}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.473, z: 4.73}
+  m_LocalPosition: {x: 0, y: -0.4767, z: 152}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -287,7 +283,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c982daf8556ba2b48887b47ad27af0f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlatformSetDestroyer
-  ThePlatform: {fileID: 3522748738960144463}
 --- !u!1 &3522748738960144463
 GameObject:
   m_ObjectHideFlags: 0

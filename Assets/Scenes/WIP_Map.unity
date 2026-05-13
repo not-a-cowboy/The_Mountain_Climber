@@ -735,69 +735,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 876091d76989b974db438a4cf004168f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlatformManager
-  platformPrefabs:
-  - {fileID: 3522748738960144463, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
+  platformPrefabs: {fileID: 3522748738960144463, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
   initialPlatforms:
   - {fileID: 1828151303}
   - {fileID: 2098412370}
-  - {fileID: 1615522859}
---- !u!1001 &1314921732
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3522748738960144463, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_Name
-      value: PlatformRunner (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 132.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6458867695595740703, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
 --- !u!1 &1412979444
 GameObject:
   m_ObjectHideFlags: 0
@@ -810,6 +751,7 @@ GameObject:
   - component: {fileID: 1412979448}
   - component: {fileID: 1412979447}
   - component: {fileID: 1412979446}
+  - component: {fileID: 1412979449}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -825,12 +767,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1412979444}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.55586237, y: -0, z: -0, w: 0.83127433}
-  m_LocalPosition: {x: 0, y: -8.9, z: -9.3}
+  m_LocalRotation: {x: 0.19474566, y: -0, z: -0, w: 0.9808538}
+  m_LocalPosition: {x: 0, y: 5.8, z: -25.9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2003819324}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -67.54, y: 0, z: 0}
 --- !u!114 &1412979446
 MonoBehaviour:
@@ -935,6 +877,24 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1412979449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412979444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83e764cbc5553e440ae5dfa65ced10f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraController
+  player: {fileID: 2003819324}
+  zOffset: -5
+  xFollowSpeed: 10
+  deathSlideDelay: 0.5
+  deathSlideDuration: 1
+  deathSlideDistance: 10
 --- !u!1 &1489995090
 GameObject:
   m_ObjectHideFlags: 0
@@ -1113,11 +1073,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b21ce64e50b5d7746aba3341aebed418, type: 3}
---- !u!1 &1615522859 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3522748738960144463, guid: 43b99238b0f5259468e39eb651fb0139, type: 3}
-  m_PrefabInstance: {fileID: 1314921732}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1828151303 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3522748738960144463, guid: b21ce64e50b5d7746aba3341aebed418, type: 3}
@@ -1424,6 +1379,9 @@ MonoBehaviour:
   jumpSpeed: 10
   forwardSpeed: 5
   laneSlideSpeed: 10
+  jumpForwardSpeedMalt: 1.25
+  accelerationRate: 0.25
+  maxForwardSpeed: 20
   groundCheck: {fileID: 1058330128}
   groundCheckRadius: 0.2
   groundLayer:
@@ -1432,6 +1390,7 @@ MonoBehaviour:
   deathPauseDuration: 1
   crouchDuration: 1
   crouchYOffset: 0.5
+  airCrouchDropForce: 20
 --- !u!54 &2003819320
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1553,7 +1512,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1058330128}
-  - {fileID: 1412979445}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &2098412370 stripped
@@ -1570,7 +1528,7 @@ SceneRoots:
   - {fileID: 1489995094}
   - {fileID: 395304645}
   - {fileID: 323560726}
+  - {fileID: 1412979445}
   - {fileID: 2003819324}
   - {fileID: 1511552291}
   - {fileID: 864633845}
-  - {fileID: 1314921732}

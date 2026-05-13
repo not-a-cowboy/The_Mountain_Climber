@@ -10,6 +10,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float forwardSpeed;
     [SerializeField] private float laneSlideSpeed = 10f;
 
+    [Header("Jump Speed Boost")]
+    [SerializeField] private float jumpForwardSpeedMalt = 1.25f;
+    private float baseForwardSpeed;
+
+    [Header("Speed Acceleration")]
+    [SerializeField] private float accelerationRate = 0.1f;
+    [SerializeField] private float maxForwardSpeed = 20f;
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
@@ -17,14 +25,18 @@ public class PlayerController : MonoBehaviour
 
     [Header("Death Settings")]
     [SerializeField] private float deathPauseDuration = 1f;
+    [SerializeField] private float deathFallForce = 15f;
+    private float deathFallTimer = 0f;
 
     [Header("Crouch Settings")]
     [SerializeField] private float crouchDuration = 1f;
     [SerializeField] private float crouchYOffset = 0.5f;
+    [SerializeField] private float airCrouchDropForce = 20f;
 
     private Rigidbody rb;
     private InputAction moveAction;
     private bool isGrounded;
+    private bool wasAirborne = false;
     private int currentLane = 0;
     private float targetX = 0f;
     private bool isDead = false;
@@ -36,12 +48,15 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalCapsuleCenter;
     private Vector3 originalScale;
 
+    private Coroutine crouchCoroutine;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         playerInput = new PlayerInputActions();
 
         originalScale = transform.localScale;
+        baseForwardSpeed = forwardSpeed;
 
         capsuleCollider = GetComponent<CapsuleCollider>();
         if (capsuleCollider != null)
@@ -77,8 +92,17 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext ctx)
     {
         if (!isGrounded || isDead) return;
+
+        // If crouching while grounded, cancel crouch instead of jumping
+        if (isCrouching)
+        {
+            CancelCrouch();
+            return;
+        }
+
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
         rb.AddForce(new Vector3(0f, jumpSpeed * 0.4f, jumpSpeed), ForceMode.Impulse);
+        forwardSpeed = baseForwardSpeed * jumpForwardSpeedMalt;
     }
 
     private void OnMove(InputAction.CallbackContext ctx)
@@ -99,8 +123,39 @@ public class PlayerController : MonoBehaviour
 
     private void OnCrouch(InputAction.CallbackContext ctx)
     {
-        if (isDead || isCrouching) return;
-        StartCoroutine(CrouchSequence());
+        if (isDead) return;
+
+        // Crouching in the air drops you to the ground
+        if (!isGrounded)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, -airCrouchDropForce, rb.linearVelocity.z);
+            return;
+        }
+
+        // Crouching while already crouching cancels it
+        if (isCrouching)
+        {
+            CancelCrouch();
+            return;
+        }
+
+        crouchCoroutine = StartCoroutine(CrouchSequence());
+    }
+
+    private void CancelCrouch()
+    {
+        if (crouchCoroutine != null)
+            StopCoroutine(crouchCoroutine);
+
+        transform.localScale = originalScale;
+        rb.MovePosition(new Vector3(rb.position.x, originalY, rb.position.z));
+
+        Animator animator = GetComponent<Animator>();
+        if (animator != null)
+            animator.SetBool("Crouch", false);
+
+        isCrouching = false;
+        crouchCoroutine = null;
     }
 
     private IEnumerator CrouchSequence()
@@ -122,21 +177,32 @@ public class PlayerController : MonoBehaviour
 
         yield return new WaitForSeconds(crouchDuration);
 
-        transform.localScale = originalScale;
-
-        rb.MovePosition(new Vector3(rb.position.x, originalY, rb.position.z));
-
-        if (animator != null)
-            animator.SetBool("Crouch", false);
-
-        isCrouching = false;
+        CancelCrouch();
     }
 
     private void FixedUpdate()
     {
         if (isDead) return;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
-        float newX = Mathf.MoveTowards(rb.position.x, targetX, laneSlideSpeed * Time.fixedDeltaTime);
+
+        // Acceleration always builds regardless of jump state
+        baseForwardSpeed = Mathf.Min(baseForwardSpeed + accelerationRate * Time.fixedDeltaTime, maxForwardSpeed);
+
+        // Lane slide speed scales with base speed
+        float scaledLaneSlideSpeed = laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
+
+        if (!isGrounded)
+            wasAirborne = true;
+        else if (wasAirborne && isGrounded)
+        {
+            forwardSpeed = baseForwardSpeed;
+            wasAirborne = false;
+        }
+
+        if (!wasAirborne)
+            forwardSpeed = baseForwardSpeed;
+
+        float newX = Mathf.MoveTowards(rb.position.x, targetX, scaledLaneSlideSpeed * Time.fixedDeltaTime);
         rb.linearVelocity = new Vector3(
             (newX - rb.position.x) / Time.fixedDeltaTime,
             isCrouching ? 0f : rb.linearVelocity.y,
@@ -144,9 +210,8 @@ public class PlayerController : MonoBehaviour
         );
 
         if (isCrouching)
-            rb.MovePosition(new Vector3(rb.position.x, originalY - crouchYOffset, rb.position.z + forwardSpeed * Time.fixedDeltaTime));
+            rb.MovePosition(new Vector3(newX, originalY - crouchYOffset, rb.position.z + forwardSpeed * Time.fixedDeltaTime));
     }
-
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -160,9 +225,13 @@ public class PlayerController : MonoBehaviour
 
     private IEnumerator DeathSequence()
     {
-        rb.linearVelocity = Vector3.zero;
+        rb.linearVelocity = new Vector3(0f, 0f, 0f);
         rb.angularVelocity = Vector3.zero;
-        rb.isKinematic = true;
+        rb.isKinematic = false; // ensure physics still runs
+
+        CameraController cam = Camera.main.GetComponent<CameraController>();
+        if (cam != null)
+            cam.TriggerDeathSequence();
 
         Animator animator = GetComponent<Animator>();
         if (animator != null)
@@ -172,6 +241,20 @@ public class PlayerController : MonoBehaviour
 
         GameManager.Instance.TriggerGameOver();
     }
+
+
+    private void Update()
+    {
+        if (!isDead) return;
+        if (deathFallTimer < deathPauseDuration)
+        {
+            deathFallTimer += Time.deltaTime;
+            return;
+        }
+        rb.AddForce(new Vector3(0f, 0f, -deathFallForce), ForceMode.Acceleration);
+    }
+
+
 
     private void OnDrawGizmosSelected()
     {
