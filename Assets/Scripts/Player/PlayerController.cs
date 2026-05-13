@@ -328,6 +328,14 @@ public class PlayerController : MonoBehaviour
         GameManager.Instance.TriggerGameOver();
     }
 
+    public void ForceKill()
+    {
+        if (isDead) return;
+        isDead = true;
+        playerInput.Disable();
+        StartCoroutine(DeathSequence());
+    }
+
     private void Update()
     {
         if (!isDead) return;
