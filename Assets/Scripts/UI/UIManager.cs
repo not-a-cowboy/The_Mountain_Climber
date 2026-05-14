@@ -57,7 +57,7 @@ public class UIManager : MonoBehaviour
 
     public void RestartButtonPressed()
     {
-        Time.timeScale = 1f;                    // Just in case
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
