@@ -167,7 +167,7 @@ MonoBehaviour:
   xFollowDelay: 0.5
   bossDuration: 30
   powerUpTimeBonus: 5
-  activationRange: 40
+  activationRange: 20
   playerSpeed: 10
   fallSpeed: 9.81
 --- !u!1 &1601141683121435885

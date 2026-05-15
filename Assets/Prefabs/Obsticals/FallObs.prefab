@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8123132036204664332}
   - component: {fileID: 2006821699336151290}
   - component: {fileID: 5803894362490839359}
+  - component: {fileID: 5206362151210581627}
   - component: {fileID: 4991418734976236606}
   m_Layer: 6
   m_Name: FallObs
@@ -92,6 +93,20 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &5206362151210581627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6072938864621587903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25a35dae2f01da442a3abb577247c9bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallObs
+  speed: 9.81
+  maxLifetime: 20
 --- !u!65 &4991418734976236606
 BoxCollider:
   m_ObjectHideFlags: 0

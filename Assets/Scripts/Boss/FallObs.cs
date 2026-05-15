@@ -28,7 +28,6 @@ public class FallObs : MonoBehaviour
         PlayerHealth health = other.GetComponent<PlayerHealth>();
         if (health != null)
         {
-            // Drain all remaining HP to guarantee death
             health.DrainHP(health.MaxHP);
         }
         else if (GameManager.Instance != null)

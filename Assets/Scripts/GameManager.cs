@@ -11,10 +11,13 @@ public class GameManager : MonoBehaviour
 
     public event System.Action OnGameOver;
     public event System.Action OnBossThreshold;
+    public event System.Action OnBossWarning;
     public event System.Action OnBossDefeated;
 
     private bool bossThresholdFired = false;
+    private bool bossWarningFired = false;
     private const float BossScoreThreshold = 10f;
+    private const float BossWarningThreshold = 25f;
 
     private void Awake()
     {
@@ -33,6 +36,12 @@ public class GameManager : MonoBehaviour
         {
             bossThresholdFired = true;
             OnBossThreshold?.Invoke();
+        }
+
+        if (!bossWarningFired && Score >= BossWarningThreshold)
+        {
+            bossWarningFired = true;
+            OnBossWarning?.Invoke();
         }
     }
 
@@ -66,6 +75,7 @@ public class GameManager : MonoBehaviour
         ScoreMultiplier = 1f;
         IsGameOver = false;
         bossThresholdFired = false;
+        bossWarningFired = false;
     }
 
     private IEnumerator ApplyScoreMultiplier(float duration, float multiplier)

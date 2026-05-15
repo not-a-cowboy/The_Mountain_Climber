@@ -29,7 +29,7 @@ public class UIManager : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnGameOver += ShowGameOverScreen;
-            GameManager.Instance.OnBossThreshold += ShowBossWarning;
+            GameManager.Instance.OnBossWarning += ShowBossWarning;
             GameManager.Instance.OnBossDefeated += OnBossDefeated;
         }
     }
@@ -39,7 +39,7 @@ public class UIManager : MonoBehaviour
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnGameOver -= ShowGameOverScreen;
-            GameManager.Instance.OnBossThreshold -= ShowBossWarning;
+            GameManager.Instance.OnBossWarning -= ShowBossWarning;
             GameManager.Instance.OnBossDefeated -= OnBossDefeated;
         }
     }
