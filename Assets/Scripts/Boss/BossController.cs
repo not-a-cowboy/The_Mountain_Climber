@@ -33,6 +33,7 @@ public class BossController : MonoBehaviour
     private bool defeated = false;
     private bool defeatStarted = false;
     private float nextSpawnZ;
+    private bool spawnOriginSet = false;
 
     private Queue<(float time, float x)> xHistory = new Queue<(float, float)>();
 
@@ -48,6 +49,9 @@ public class BossController : MonoBehaviour
         }
 
         timer = bossDuration;
+
+        if (fallObsPrefab == null)
+            Debug.LogError("[Boss] fallObsPrefab is NULL in Awake — assign it on the Boss prefab in the Inspector.");
     }
 
     private void Start()
@@ -56,12 +60,19 @@ public class BossController : MonoBehaviour
             Debug.LogError("[Boss] PlayerController.Instance is null in Start.");
 
         timer = bossDuration;
+
+        if (!spawnOriginSet)
+            Debug.LogWarning("[Boss] InitSpawnOrigin was never called — nextSpawnZ is 0. " +
+                             "PlatformManager must call activeBoss.InitSpawnOrigin() after spawning the boss.");
     }
 
-    public void InitSpawnOrigin(float bossStartZ)
+    public void InitSpawnOrigin()
     {
-        nextSpawnZ = bossStartZ + spawnIntervalZ;
+        nextSpawnZ = transform.position.z + spawnIntervalZ;
+        spawnOriginSet = true;
+        Debug.Log($"[Boss] InitSpawnOrigin called — bossStartZ: {transform.position.z:F1}, first nextSpawnZ: {nextSpawnZ:F1}");
     }
+
 
     private void Update()
     {
@@ -81,12 +92,15 @@ public class BossController : MonoBehaviour
             float distZ = Mathf.Abs(transform.position.z - playerPos.z);
             if (distZ > activationRange)
             {
-                Debug.Log($"[Boss] Waiting to activate — player Z: {playerPos.z}, boss Z: {transform.position.z}, distZ: {distZ}");
+                Debug.Log($"[Boss] Waiting to activate — player Z: {playerPos.z:F1}, " +
+                          $"boss Z: {transform.position.z:F1}, distZ: {distZ:F1}, " +
+                          $"activationRange: {activationRange:F1}");
                 return;
             }
 
             activated = true;
-            Debug.Log("[Boss] Activated — beginning flee sequence.");
+            Debug.Log($"[Boss] Activated — boss Z: {transform.position.z:F1}, " +
+                      $"player Z: {playerPos.z:F1}, nextSpawnZ: {nextSpawnZ:F1}");
         }
 
         playerSpeed = PlayerController.Instance.CurrentSpeed;
@@ -127,12 +141,27 @@ public class BossController : MonoBehaviour
 
     private void CheckAndSpawnFallObs()
     {
-        if (fallObsPrefab == null) return;
+        if (fallObsPrefab == null)
+        {
+            Debug.LogError("[Boss] CheckAndSpawnFallObs — fallObsPrefab is NULL, cannot spawn.");
+            return;
+        }
+
+        if (!spawnOriginSet)
+        {
+            Debug.LogWarning("[Boss] CheckAndSpawnFallObs — spawnOriginSet is false, skipping. " +
+                             "InitSpawnOrigin was never called.");
+            return;
+        }
+
+        Debug.Log($"[Boss] CheckAndSpawnFallObs — boss Z: {transform.position.z:F1}, nextSpawnZ: {nextSpawnZ:F1}");
 
         while (transform.position.z >= nextSpawnZ)
         {
+            Debug.Log($"[Boss] Threshold reached — spawning at Z: {nextSpawnZ:F1}");
             SpawnFallObsAtZ(nextSpawnZ);
             nextSpawnZ += spawnIntervalZ;
+            Debug.Log($"[Boss] Next spawn threshold: {nextSpawnZ:F1}");
         }
     }
 
@@ -142,6 +171,8 @@ public class BossController : MonoBehaviour
         List<int> availableLanes = new List<int> { 0, 1, 2 };
         ShuffleList(availableLanes);
 
+        Debug.Log($"[Boss] SpawnFallObsAtZ — worldZ: {worldZ:F1}, spawning {count} obstacle(s)");
+
         for (int i = 0; i < Mathf.Min(count, availableLanes.Count); i++)
         {
             Vector3 spawnPos = new Vector3(
@@ -149,13 +180,15 @@ public class BossController : MonoBehaviour
                 transform.position.y + spawnHeightOffset,
                 worldZ
             );
-            Instantiate(fallObsPrefab, spawnPos, Quaternion.identity);
+            GameObject spawned = Instantiate(fallObsPrefab, spawnPos, Quaternion.identity);
+            Debug.Log($"[Boss] Spawned FallObs '{spawned.name}' at {spawnPos}");
         }
     }
 
     private IEnumerator DefeatSequence()
     {
         defeated = true;
+        Debug.Log("[Boss] DefeatSequence started.");
 
         if (GameManager.Instance != null)
             GameManager.Instance.NotifyBossDefeated();

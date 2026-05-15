@@ -86,7 +86,7 @@ public class PlatformManager : MonoBehaviour
                 );
                 GameObject bossGO = Instantiate(bossPrefab, bossPos, Quaternion.identity);
                 activeBoss = bossGO.GetComponent<BossController>();
-                activeBoss?.InitSpawnOrigin(bossGO.transform.position.z);
+                activeBoss?.InitSpawnOrigin();
                 Debug.Log($"[PlatformManager] Boss spawned at {bossPos}.");
             }
             else
@@ -99,7 +99,6 @@ public class PlatformManager : MonoBehaviour
             newPlatform.name = "PlatformBossFight";
             if (spawner != null)
                 spawner.SpawnBossObstacles();
-            activeBoss?.InitSpawnOrigin(newPlatform.transform.position.z);
         }
         else
         {
