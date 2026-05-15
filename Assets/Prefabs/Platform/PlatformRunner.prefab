@@ -162,12 +162,12 @@ MonoBehaviour:
   jumpObsPrefab: {fileID: 6072938864621587903, guid: 526c71b07b466354883f04bc4271b9ee, type: 3}
   duckObsPrefab: {fileID: 337989251600425700, guid: bc732b7f08bbf20419bb537efbceb620, type: 3}
   dodgeObsPrefab: {fileID: 8055285460051281046, guid: 21e85c50eee07c54c99666520b6489a4, type: 3}
+  fallObsPrefab: {fileID: 6072938864621587903, guid: 340ec6fa217c9b740b84dabbe5e7cc92, type: 3}
   higherJumpPrefab: {fileID: 4183823287642379481, guid: 7e542c557a001bd4ebae923bdb06249e, type: 3}
   invulnerabilityPrefab: {fileID: 4183823287642379481, guid: 14ea6f3b30a46c141b537e87b86df3f2, type: 3}
   scoreMultiplierPrefab: {fileID: 4183823287642379481, guid: 30a0347dc782e32468ec175d6e9c763d, type: 3}
   launchPrefab: {fileID: 4183823287642379481, guid: 33a9840ee66a3a84ca958b5c98a6d66c, type: 3}
   oxygenRefillPrefab: {fileID: 4183823287642379481, guid: 1e5862dbcd0e2de4f9fbc0abb41efca6, type: 3}
-  fallObsPrefab: {fileID: 6072938864621587903, guid: 340ec6fa217c9b740b84dabbe5e7cc92, type: 3}
   spawnHeightOffset: 1
   laneXPositions:
   - -3
@@ -454,7 +454,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3272195404805957411, guid: ca49b7c489f69fb4c89501a5cd8a99ba, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.5
+      value: 0.74
       objectReference: {fileID: 0}
     - target: {fileID: 3272195404805957411, guid: ca49b7c489f69fb4c89501a5cd8a99ba, type: 3}
       propertyPath: m_LocalPosition.y
@@ -491,6 +491,10 @@ PrefabInstance:
     - target: {fileID: 3272195404805957411, guid: ca49b7c489f69fb4c89501a5cd8a99ba, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3272195404805957411, guid: ca49b7c489f69fb4c89501a5cd8a99ba, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
