@@ -16,8 +16,8 @@ public class GameManager : MonoBehaviour
 
     private bool bossThresholdFired = false;
     private bool bossWarningFired = false;
-    private const float BossScoreThreshold = 10f;
-    private const float BossWarningThreshold = 25f;
+    private const float BossScoreThreshold = 60f;
+    private const float BossWarningThreshold = 75f;
 
     private void Awake()
     {
