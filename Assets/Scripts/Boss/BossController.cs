@@ -8,9 +8,9 @@ public class BossController : MonoBehaviour
     [SerializeField] private GameObject fallObsPrefab;
 
     [Header("Spawn Settings")]
-    [SerializeField] private float[] obstacleZOffsets = { 20f, 0f, -20f };
     [SerializeField] private float[] laneXPositions = { -3f, 0f, 3f };
     [SerializeField] private float spawnHeightOffset = 1f;
+    [SerializeField] private float spawnIntervalZ = 10f;
 
     [Header("Timing")]
     [SerializeField] private float xFollowDelay = 0.5f;
@@ -32,10 +32,9 @@ public class BossController : MonoBehaviour
     private float timer;
     private bool defeated = false;
     private bool defeatStarted = false;
+    private float nextSpawnZ;
 
     private Queue<(float time, float x)> xHistory = new Queue<(float, float)>();
-    private HashSet<string> triggeredZThresholds = new HashSet<string>();
-    private float lastPlatformOriginZ = float.MaxValue;
 
     private void Awake()
     {
@@ -57,6 +56,11 @@ public class BossController : MonoBehaviour
             Debug.LogError("[Boss] PlayerController.Instance is null in Start.");
 
         timer = bossDuration;
+    }
+
+    public void InitSpawnOrigin(float bossStartZ)
+    {
+        nextSpawnZ = bossStartZ + spawnIntervalZ;
     }
 
     private void Update()
@@ -88,7 +92,6 @@ public class BossController : MonoBehaviour
         playerSpeed = PlayerController.Instance.CurrentSpeed;
         transform.position += Vector3.forward * (playerSpeed * Time.deltaTime);
 
-
         xHistory.Enqueue((Time.time, playerPos.x));
         while (xHistory.Count > 1 && xHistory.Peek().time < Time.time - xFollowDelay)
             xHistory.Dequeue();
@@ -105,34 +108,6 @@ public class BossController : MonoBehaviour
         }
 
         CheckAndSpawnFallObs();
-    }
-
-    public void NotifyPlatformOriginZ(float worldZ)
-    {
-        if (Mathf.Abs(worldZ - lastPlatformOriginZ) > 5f)
-        {
-            lastPlatformOriginZ = worldZ;
-            triggeredZThresholds.Clear();
-        }
-    }
-
-    private void UpdatePlatformOriginFallback()
-    {
-        if (PlayerController.Instance == null) return;
-
-        Vector3 playerPos = PlayerController.Instance.RigidbodyPosition;
-
-        if (lastPlatformOriginZ == float.MaxValue)
-        {
-            lastPlatformOriginZ = playerPos.z;
-            return;
-        }
-
-        if (playerPos.z > lastPlatformOriginZ + 60f)
-        {
-            lastPlatformOriginZ = playerPos.z;
-            triggeredZThresholds.Clear();
-        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -152,23 +127,16 @@ public class BossController : MonoBehaviour
 
     private void CheckAndSpawnFallObs()
     {
-        UpdatePlatformOriginFallback();
-        if (fallObsPrefab == null || lastPlatformOriginZ == float.MaxValue) return;
+        if (fallObsPrefab == null) return;
 
-        foreach (float zOff in obstacleZOffsets)
+        while (transform.position.z >= nextSpawnZ)
         {
-            float thresholdZ = lastPlatformOriginZ + zOff;
-            string key = thresholdZ.ToString("F1");
-
-            if (!triggeredZThresholds.Contains(key) && transform.position.z >= thresholdZ)
-            {
-                triggeredZThresholds.Add(key);
-                SpawnFallObsAtThreshold(thresholdZ);
-            }
+            SpawnFallObsAtZ(nextSpawnZ);
+            nextSpawnZ += spawnIntervalZ;
         }
     }
 
-    private void SpawnFallObsAtThreshold(float worldZ)
+    private void SpawnFallObsAtZ(float worldZ)
     {
         int count = Random.Range(1, 3);
         List<int> availableLanes = new List<int> { 0, 1, 2 };

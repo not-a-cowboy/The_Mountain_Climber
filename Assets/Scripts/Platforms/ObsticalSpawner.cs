@@ -51,7 +51,7 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (prefab == dodgeObsPrefab) return 1f;
         if (prefab == duckObsPrefab) return 2f;
-        if (prefab == jumpObsPrefab) return 0.2f;
+        if (prefab == jumpObsPrefab) return 0.05f;
         return spawnHeightOffset;
     }
 

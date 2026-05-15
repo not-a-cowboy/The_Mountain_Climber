@@ -70,7 +70,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalScale;
 
     public Vector3 RigidbodyPosition => rb.position;
-    public float CurrentSpeed => rb.linearVelocity.z;
+    public float CurrentSpeed => forwardSpeed;
 
     private Coroutine crouchCoroutine;
 
