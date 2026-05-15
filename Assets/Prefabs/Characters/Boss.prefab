@@ -34,6 +34,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 3428768780066541108}
   - {fileID: 6515443286245306510}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
@@ -52,7 +53,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 935386621336340973}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -156,17 +157,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7732e6631c63de143b765911df2e0a66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossController
-  player: {fileID: 7709822338965516504, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
   fallObsPrefab: {fileID: 6072938864621587903, guid: 340ec6fa217c9b740b84dabbe5e7cc92, type: 3}
-  obstacleZOffsets:
-  - 20
-  - 0
-  - -20
   laneXPositions:
   - -3
   - 0
   - 3
   spawnHeightOffset: 1
+  spawnIntervalZ: 10
   xFollowDelay: 0.5
   bossDuration: 30
   powerUpTimeBonus: 5
@@ -204,3 +201,65 @@ Transform:
   m_Children: []
   m_Father: {fileID: 7709822338965516504}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &8074751847862776043
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7709822338965516504}
+    m_Modifications:
+    - target: {fileID: 6111938438287238245, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_Name
+      value: Arnold
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.92
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+--- !u!4 &3428768780066541108 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+  m_PrefabInstance: {fileID: 8074751847862776043}
+  m_PrefabAsset: {fileID: 0}
