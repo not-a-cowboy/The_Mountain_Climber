@@ -22,8 +22,8 @@ public class HUDManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
 
-    private static readonly Color healthColorFull = Color.lightBlue;
-    private static readonly Color healthColorLow = Color.darkBlue;
+    private static readonly Color healthColorFull = new Color(0.247f, 0.749f, 0.745f, 1.0f);
+    private static readonly Color healthColorLow = new Color(0.247f, 0.090f, 0.714f, 1.0f);
 
     private void Start()
     {
