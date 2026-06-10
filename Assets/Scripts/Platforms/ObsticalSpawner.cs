@@ -21,7 +21,9 @@ public class ObstacleSpawner : MonoBehaviour
     public float spawnHeightOffset = 1f;
     public float[] laneXPositions = { -3f, 0f, 3f };
     public float nearZOffset = 20f;
+    public float nearCenterZOffset = 10f;
     public float centerZOffset = 0f;
+    public float farCenterZOffset = -10f;
     public float farZOffset = -20f;
 
     [Header("Spawn Chances")]
@@ -36,14 +38,18 @@ public class ObstacleSpawner : MonoBehaviour
     {
         dodgeCountThisSpawn = 0;
         SpawnZone(nearZOffset);
+        SpawnZone(nearCenterZOffset);
         SpawnZone(centerZOffset);
+        SpawnZone(farCenterZOffset);
         SpawnZone(farZOffset);
     }
 
     public void SpawnBossObstacles()
     {
         SpawnPowerUpOnlyZone(nearZOffset);
+        SpawnPowerUpOnlyZone(nearCenterZOffset);
         SpawnPowerUpOnlyZone(centerZOffset);
+        SpawnPowerUpOnlyZone(farCenterZOffset);
         SpawnPowerUpOnlyZone(farZOffset);
     }
 
@@ -51,7 +57,7 @@ public class ObstacleSpawner : MonoBehaviour
     {
         if (prefab == dodgeObsPrefab) return 1f;
         if (prefab == duckObsPrefab) return 2f;
-        if (prefab == jumpObsPrefab) return 1f;
+        if (prefab == jumpObsPrefab) return 0.35f;
         return spawnHeightOffset;
     }
 
