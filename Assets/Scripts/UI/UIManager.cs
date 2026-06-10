@@ -20,8 +20,13 @@ public class UIManager : MonoBehaviour
 
     private void Awake()
     {
-        if (gameOverPanel != null) gameOverPanel.SetActive(false);
-        if (bossWarningText != null) bossWarningText.gameObject.SetActive(false);
+        if (gameOverPanel != null)
+        {
+            Debug.Log("panel is false");
+            gameOverPanel.SetActive(false);
+        }
+        if (bossWarningText != null) 
+            bossWarningText.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -52,7 +57,11 @@ public class UIManager : MonoBehaviour
 
     private void ShowGameOverScreen()
     {
-        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+        if (gameOverPanel != null)
+        {
+            Debug.Log("panel is true");
+            gameOverPanel.SetActive(true);
+        }
         if (finalScoreText != null && GameManager.Instance != null)
             finalScoreText.text = $"GAME OVER\nFinal Score: {Mathf.FloorToInt(GameManager.Instance.Score)}";
     }
