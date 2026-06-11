@@ -19,6 +19,7 @@ public class InventoryManager : MonoBehaviour
     private bool[] active = new bool[4];
     private float[] glowTimers = new float[4];          // remaining glow seconds per slot
     private Coroutine[] glowCoroutines = new Coroutine[4]; // one coroutine per slot, extended on reuse
+    private int maxStackSize = 5;
 
     public int GetCount(int slot) => counts[slot];
     public bool IsActive(int slot) => active[slot];
@@ -56,7 +57,12 @@ public class InventoryManager : MonoBehaviour
     public void AddToSlot(PowerUpType type)
     {
         int slot = SlotFor(type);
-        if (slot < 0) return;
+        if (slot < 0) 
+            return;
+
+        if (counts[slot] >= maxStackSize) 
+            return;
+
         counts[slot]++;
         OnInventoryChanged?.Invoke();
     }

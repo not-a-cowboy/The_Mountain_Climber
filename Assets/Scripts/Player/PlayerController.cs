@@ -70,7 +70,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 originalScale;
 
     public Vector3 RigidbodyPosition => rb.position;
-    public float CurrentSpeed => forwardSpeed;
+    public float CurrentSpeed => isLaunched ? forwardSpeed : rb.linearVelocity.z;
 
     private Coroutine crouchCoroutine;
 
@@ -479,6 +479,7 @@ public class PlayerController : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         rb.isKinematic = false;
 
+
         CameraController cam = Camera.main.GetComponent<CameraController>();
         if (cam != null)
             cam.TriggerDeathSequence();
@@ -488,6 +489,8 @@ public class PlayerController : MonoBehaviour
             animator.SetTrigger("Death");
 
         yield return new WaitForSeconds(deathPauseDuration);
+
+        SetObstacleCollisionIgnored(true);
 
         GameManager.Instance.TriggerGameOver();
     }

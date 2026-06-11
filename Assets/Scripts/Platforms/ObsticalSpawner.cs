@@ -20,11 +20,13 @@ public class ObstacleSpawner : MonoBehaviour
     [Header("Spawn Settings")]
     public float spawnHeightOffset = 1f;
     public float[] laneXPositions = { -3f, 0f, 3f };
-    public float nearZOffset = 20f;
-    public float nearCenterZOffset = 10f;
+    //public float beginZOffset = -30f;
+    public float nearZOffset = -20f;
+    public float nearCenterZOffset = -10f;
     public float centerZOffset = 0f;
-    public float farCenterZOffset = -10f;
-    public float farZOffset = -20f;
+    public float farCenterZOffset = 10f;
+    public float farZOffset = 20f;
+    public float endZOffset = 30f;
 
     [Header("Spawn Chances")]
     [Range(0f, 1f)] public float powerUpSpawnChance = 0.3f;
@@ -37,27 +39,31 @@ public class ObstacleSpawner : MonoBehaviour
     public void SpawnObstacles()
     {
         dodgeCountThisSpawn = 0;
+        //SpawnZone(beginZOffset);
         SpawnZone(nearZOffset);
         SpawnZone(nearCenterZOffset);
         SpawnZone(centerZOffset);
         SpawnZone(farCenterZOffset);
         SpawnZone(farZOffset);
+        SpawnZone(endZOffset);
     }
 
     public void SpawnBossObstacles()
     {
+        //SpawnPowerUpOnlyZone(beginZOffset);
         SpawnPowerUpOnlyZone(nearZOffset);
         SpawnPowerUpOnlyZone(nearCenterZOffset);
         SpawnPowerUpOnlyZone(centerZOffset);
         SpawnPowerUpOnlyZone(farCenterZOffset);
         SpawnPowerUpOnlyZone(farZOffset);
+        SpawnPowerUpOnlyZone(endZOffset);
     }
 
     float GetObstacleHeightOffset(GameObject prefab)
     {
         if (prefab == dodgeObsPrefab) return 1f;
         if (prefab == duckObsPrefab) return 2f;
-        if (prefab == jumpObsPrefab) return 0.35f;
+        if (prefab == jumpObsPrefab) return 0.3f;
         return spawnHeightOffset;
     }
 

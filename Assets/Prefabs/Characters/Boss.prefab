@@ -168,7 +168,7 @@ MonoBehaviour:
   bossDuration: 30
   powerUpTimeBonus: 5
   activationRange: 20
-  playerSpeed: 10
+  playerSpeed: 8
   fallSpeed: 9.81
 --- !u!1 &1601141683121435885
 GameObject:
@@ -215,7 +215,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.02
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6888861512872165087, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
       propertyPath: m_LocalPosition.y

@@ -34,6 +34,7 @@ public class BossController : MonoBehaviour
     private bool defeatStarted = false;
     private float nextSpawnZ;
     private bool spawnOriginSet = false;
+    private float bossZOffset;
 
     private Queue<(float time, float x)> xHistory = new Queue<(float, float)>();
 
@@ -99,12 +100,13 @@ public class BossController : MonoBehaviour
             }
 
             activated = true;
+            bossZOffset = transform.position.z - playerPos.z;
             Debug.Log($"[Boss] Activated — boss Z: {transform.position.z:F1}, " +
                       $"player Z: {playerPos.z:F1}, nextSpawnZ: {nextSpawnZ:F1}");
         }
 
-        playerSpeed = PlayerController.Instance.CurrentSpeed;
-        transform.position += Vector3.forward * (playerSpeed * Time.deltaTime);
+        float playerZ = playerPos.z + bossZOffset;
+        transform.position = new Vector3(transform.position.x, transform.position.y, playerZ);
 
         xHistory.Enqueue((Time.time, playerPos.x));
         while (xHistory.Count > 1 && xHistory.Peek().time < Time.time - xFollowDelay)
@@ -171,7 +173,27 @@ public class BossController : MonoBehaviour
         List<int> availableLanes = new List<int> { 0, 1, 2 };
         ShuffleList(availableLanes);
 
-        Debug.Log($"[Boss] SpawnFallObsAtZ — worldZ: {worldZ:F1}, spawning {count} obstacle(s)");
+        // Find which lane index is closest to the boss's current X
+        float bossX = transform.position.x;
+        int closestLaneIndex = 0;
+        float closestDist = Mathf.Infinity;
+        for (int i = 0; i < laneXPositions.Length; i++)
+        {
+            float dist = Mathf.Abs(laneXPositions[i] - bossX);
+            if (dist < closestDist)
+            {
+                closestDist = dist;
+                closestLaneIndex = i;
+            }
+        }
+
+        // Guarantee the closest lane is always first in the spawn list
+        availableLanes.Remove(closestLaneIndex);
+        ShuffleList(availableLanes);
+        availableLanes.Insert(0, closestLaneIndex);
+
+        Debug.Log($"[Boss] SpawnFallObsAtZ — worldZ: {worldZ:F1}, bossX: {bossX:F1}, " +
+                  $"guaranteed lane index: {closestLaneIndex}, spawning {count} obstacle(s)");
 
         for (int i = 0; i < Mathf.Min(count, availableLanes.Count); i++)
         {
@@ -184,6 +206,7 @@ public class BossController : MonoBehaviour
             Debug.Log($"[Boss] Spawned FallObs '{spawned.name}' at {spawnPos}");
         }
     }
+
 
     private IEnumerator DefeatSequence()
     {
