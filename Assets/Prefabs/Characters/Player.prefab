@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 928193443515302592}
   - component: {fileID: 3219743689820701192}
   - component: {fileID: 3686221331655956450}
+  - component: {fileID: 365394198548025193}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -209,6 +210,22 @@ MonoBehaviour:
   legsRenderer: {fileID: 0}
   glowIntensity: 1.5
   glowAlpha: 0.5
+--- !u!114 &365394198548025193
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935386621336340973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7237d7741000684699f9fe0c16f8655, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InventoryManager
+  emergencyHPCost: 25
+  playerController: {fileID: 928193443515302592}
+  playerHealth: {fileID: 3219743689820701192}
+  playerGlow: {fileID: 3686221331655956450}
 --- !u!1 &1601141683121435885
 GameObject:
   m_ObjectHideFlags: 0
