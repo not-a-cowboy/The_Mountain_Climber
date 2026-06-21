@@ -4444,9 +4444,33 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 928193443515302592, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
+      propertyPath: jumpSpeed
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 928193443515302592, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
+      propertyPath: playerHealth
+      value: 
+      objectReference: {fileID: 2003819326}
+    - target: {fileID: 928193443515302592, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
+      propertyPath: jumpUpWidthFraction
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 928193443515302592, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
+      propertyPath: jumpForwardSpeedMalt
+      value: 110
+      objectReference: {fileID: 0}
+    - target: {fileID: 928193443515302592, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
+      propertyPath: jumpForwardHeightMultiplier
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 935386621336340973, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5238445062449767481, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7709822338965516504, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
       propertyPath: m_LocalPosition.x

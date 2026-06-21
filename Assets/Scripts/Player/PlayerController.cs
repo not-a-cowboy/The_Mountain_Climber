@@ -13,18 +13,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float laneSlideSpeed = 10f;
 
     [Header("Jump Speed Boost")]
-    [SerializeField] private float jumpForwardSpeedMalt = 1.25f;
+    [SerializeField] private float jumpForwardSpeedMalt = 110f;
+    [SerializeField] private float jumpMaltDecayRate = 0.025f; // NEW: how much jumpForwardSpeedMalt decreases per second, mirroring accelerationRate's per-second growth
+    [SerializeField] private float jumpMaltMinimum = 1f;        // NEW: floor — malt never decays below this
     private float baseForwardSpeed;
     private float baseJumpSpeed;
     private float baseJumpMalt;
 
     [Header("Speed Acceleration")]
-    [SerializeField] private float accelerationRate = 0.1f;
+    [SerializeField] private float accelerationRate = 0.05f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private int requiredGroundedFramesToLand = 2; // consecutive grounded FixedUpdate ticks needed before treating it as a real landing (filters 1-tick ground-check flicker)
 
     [Header("Death Settings")]
     [SerializeField] private float deathPauseDuration = 1f;
@@ -53,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private float remainingJumpTime;
     private float remainingInvulnerabilityTime;
     private bool obstacleCollisionIgnored = false;
+    private float preBoostJumpMalt;
 
     private Rigidbody rb;
     private InputAction moveAction;
@@ -62,6 +66,9 @@ public class PlayerController : MonoBehaviour
     private float targetX = 0f;
     private bool isDead = false;
     private bool isCrouching = false;
+    private bool hasLeftGroundAfterJump = false;
+    private bool justJumped = false;
+    private int groundedStreak = 0; 
     private float originalY;
 
     private CapsuleCollider capsuleCollider;
@@ -107,6 +114,7 @@ public class PlayerController : MonoBehaviour
         while (queueCount > 0)
         {
             ref PendingInput next = ref inputQueue[queueHead];
+            Debug.Log($"[DRAIN] type={next.type} | fireAt={next.fireAt:F3} | Time.time={Time.time:F3} | will fire={Time.time >= next.fireAt}");
             if (Time.time < next.fireAt) break;
 
             switch (next.type)
@@ -120,6 +128,7 @@ public class PlayerController : MonoBehaviour
             queueCount--;
         }
     }
+
 
     private void Awake()
     {
@@ -170,8 +179,10 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext ctx)
     {
         if (isDead) return;
+        Debug.Log($"[ON_JUMP] InputDelay={InputDelay:F3} | HPPercent={playerHealth?.HPPercent:F3} | fireAt={Time.time + InputDelay:F3} | Time.time={Time.time:F3}");
         EnqueueInput(0);
     }
+
 
     private void OnMove(InputAction.CallbackContext ctx)
     {
@@ -187,6 +198,7 @@ public class PlayerController : MonoBehaviour
 
     private void ExecuteJump()
     {
+        Debug.Log($"[EXECUTE_JUMP CALLED] isGrounded={isGrounded} | isDead={isDead} | isLaunched={isLaunched} | isCrouching={isCrouching}");
         if (isLaunched) return;
         if (!isGrounded || isDead) return;
 
@@ -198,7 +210,15 @@ public class PlayerController : MonoBehaviour
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
         rb.AddForce(new Vector3(0f, jumpSpeed * 0.4f, jumpSpeed), ForceMode.Impulse);
-        forwardSpeed = baseForwardSpeed * jumpForwardSpeedMalt;
+
+        float speedBefore = forwardSpeed;
+        forwardSpeed = baseForwardSpeed * (1f + jumpForwardSpeedMalt / 100f);
+        wasAirborne = true;
+        hasLeftGroundAfterJump = false;
+        justJumped = true;
+        groundedStreak = 0;
+
+        Debug.Log($"[JUMP] baseForwardSpeed={baseForwardSpeed:F2} | jumpForwardSpeedMalt={jumpForwardSpeedMalt:F2} | speedBefore={speedBefore:F2} | forwardSpeed AFTER={forwardSpeed:F2} | wasAirborne={wasAirborne}");
     }
 
     private void ExecuteMove(Vector2 input)
@@ -297,6 +317,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             remainingJumpTime = duration;
+            preBoostJumpMalt = jumpForwardSpeedMalt; 
         }
 
         higherJumpCoroutine = StartCoroutine(HigherJumpSequence(remainingJumpTime, multiplier));
@@ -372,13 +393,13 @@ public class PlayerController : MonoBehaviour
     private IEnumerator HigherJumpSequence(float duration, float multiplier)
     {
         jumpSpeed = baseJumpSpeed * multiplier;
-        jumpForwardSpeedMalt = baseJumpMalt * multiplier;
+        jumpForwardSpeedMalt = preBoostJumpMalt * multiplier;
         Debug.Log("HigherJump STARTED");
 
         yield return new WaitForSeconds(duration);
 
         jumpSpeed = baseJumpSpeed;
-        jumpForwardSpeedMalt = baseJumpMalt;
+        jumpForwardSpeedMalt = preBoostJumpMalt;
         higherJumpCoroutine = null;
         Debug.Log("HigherJump ENDED");
     }
@@ -412,30 +433,72 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         if (isDead) return;
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+        bool groundedThisFrame = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+        if (groundedThisFrame != isGrounded)
+            Debug.Log($"[GROUND] isGrounded changed: {isGrounded} → {groundedThisFrame} | wasAirborne={wasAirborne}");
+
+        isGrounded = groundedThisFrame;
 
         baseForwardSpeed += accelerationRate * Time.fixedDeltaTime;
 
-        float scaledLaneSlideSpeed = laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
-
-        if (!isGrounded)
-            wasAirborne = true;
-        else if (wasAirborne && isGrounded)
+        // NEW: jumpForwardSpeedMalt decays at the same per-second pace baseForwardSpeed grows,
+        // but only while no HigherJump power-up is active (that coroutine owns the value while it runs).
+        if (higherJumpCoroutine == null)
         {
-            if (!isLaunched)
-                forwardSpeed = baseForwardSpeed;
-            wasAirborne = false;
+            jumpForwardSpeedMalt = Mathf.Max(jumpMaltMinimum, jumpForwardSpeedMalt - jumpMaltDecayRate * Time.fixedDeltaTime);
         }
 
-        if (!wasAirborne && !isLaunched)
-            forwardSpeed = baseForwardSpeed;
+        if (!isGrounded)
+        {
+            wasAirborne = true;
+            hasLeftGroundAfterJump = true;
+            justJumped = false; // we've actually left the ground now, safe to allow future resets
+            groundedStreak = 0; // not grounded, so the streak resets
+        }
+        else
+        {
+            groundedStreak++; // count consecutive grounded ticks
+
+            if (wasAirborne)
+            {
+                // Only treat this as a real landing once we've been grounded for
+                // several consecutive ticks — a single-tick ground touch is almost
+                // always physics flicker (e.g. settling from the previous landing),
+                // not an actual landing, and resetting forwardSpeed on it wipes out
+                // the jump boost before the player ever feels it.
+                if (groundedStreak >= requiredGroundedFramesToLand)
+                {
+                    if (!isLaunched && hasLeftGroundAfterJump)
+                    {
+                        Debug.Log($"[LAND] Resetting forwardSpeed from {forwardSpeed:F2} to baseForwardSpeed {baseForwardSpeed:F2}");
+                        forwardSpeed = baseForwardSpeed;
+                    }
+                    wasAirborne = false;
+                    hasLeftGroundAfterJump = false;
+                }
+                // else: still within the flicker window — stay logically airborne,
+                // keep the boosted forwardSpeed, and wait for either more real
+                // grounded ticks (-> landing above) or another !isGrounded tick
+                // (-> groundedStreak resets to 0 and we keep waiting).
+            }
+            else if (!isLaunched && !justJumped)
+            {
+                forwardSpeed = baseForwardSpeed;
+            }
+        }
+
+
+        float scaledLaneSlideSpeed = laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
 
         float newX = Mathf.MoveTowards(rb.position.x, targetX, scaledLaneSlideSpeed * Time.fixedDeltaTime);
         rb.linearVelocity = new Vector3(
             (newX - rb.position.x) / Time.fixedDeltaTime,
             isCrouching ? 0f : (isLaunched ? 0f : rb.linearVelocity.y),
-            forwardSpeed
-        );
+            forwardSpeed);
+
+        Debug.Log($"[FIXEDUPDATE] forwardSpeed={forwardSpeed:F2} | base={baseForwardSpeed:F2} | vel.z={rb.linearVelocity.z:F2} | grounded={isGrounded} | wasAirborne={wasAirborne} | isLaunched={isLaunched}");
 
         if (isLaunched)
         {
