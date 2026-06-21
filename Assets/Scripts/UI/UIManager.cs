@@ -56,15 +56,14 @@ public class UIManager : MonoBehaviour
             scoreText.text = $"Score: {Mathf.FloorToInt(GameManager.Instance.Score)}";
     }
 
-    private void ShowGameOverScreen()
+    private void ShowGameOverScreen() //method to now show the game over scene
     {
-        if (gameOverPanel != null)
+        if (GameManager.Instance != null)
         {
-            Debug.Log("panel is true");
-            gameOverPanel.SetActive(true);
+            PlayerPrefs.SetInt("FinalScore", Mathf.FloorToInt(GameManager.Instance.Score));
+            PlayerPrefs.Save();
         }
-        if (finalScoreText != null && GameManager.Instance != null)
-            finalScoreText.text = $"GAME OVER\nFinal Score: {Mathf.FloorToInt(GameManager.Instance.Score)}";
+        SceneManager.LoadScene("Game_Over");
     }
 
     private void ShowBossWarning()

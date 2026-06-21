@@ -216,6 +216,8 @@ public class BossController : MonoBehaviour
         defeated = true;
         Debug.Log("[Boss] DefeatSequence started.");
 
+        if (bossAnim != null) bossAnim.PlayDefeatAnimation();//plays defeat animation
+
         if (GameManager.Instance != null)
             GameManager.Instance.NotifyBossDefeated();
 
