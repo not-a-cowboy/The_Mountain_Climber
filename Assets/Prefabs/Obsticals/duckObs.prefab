@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1355157170221563316}
   - component: {fileID: 1685937445150303570}
   - component: {fileID: 7961577985333294423}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: duckObs
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -122,9 +122,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 307895842168222423}
     m_Modifications:
+    - target: {fileID: 1284939402115415721, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1348665128568515943, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
       propertyPath: m_Name
       value: Vines_Thick
+      objectReference: {fileID: 0}
+    - target: {fileID: 1348665128568515943, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1363701598058760920, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1872577589423912925, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
       propertyPath: m_LocalScale.x
@@ -174,6 +186,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3847804716332822660, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7644602329356417225, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9218755993386392269, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -192,9 +216,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 307895842168222423}
     m_Modifications:
+    - target: {fileID: 1284939402115415721, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 1348665128568515943, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
       propertyPath: m_Name
       value: Vines_Thick (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1348665128568515943, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1363701598058760920, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1872577589423912925, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
       propertyPath: m_LocalScale.x
@@ -243,6 +279,18 @@ PrefabInstance:
     - target: {fileID: 1872577589423912925, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3847804716332822660, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7644602329356417225, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 9218755993386392269, guid: dfb0870a2766eab478acd2c34b68c2b5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

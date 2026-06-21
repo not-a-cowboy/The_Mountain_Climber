@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2006821699336151290}
   - component: {fileID: 5803894362490839359}
   - component: {fileID: 4991418734976236606}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: jumpObs
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 6072938864621587903}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 3, y: 0.715, z: 2}
+  m_LocalPosition: {x: 0, y: -0.0047844, z: 0}
+  m_LocalScale: {x: 3, y: 0.15573594, z: 5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3694053903283765670}
@@ -125,6 +125,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slippery_Rock
       objectReference: {fileID: 0}
+    - target: {fileID: 5952912433745482472, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalScale.x
       value: 1.2382854
@@ -135,19 +139,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalScale.z
-      value: 6.1069813
+      value: 46.52546
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0023625
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.38
+      value: -0.52476
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.003
+      value: 0.0000000010554
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalRotation.w
@@ -159,15 +163,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -90
       objectReference: {fileID: 0}
     - target: {fileID: 6473694653711878226, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

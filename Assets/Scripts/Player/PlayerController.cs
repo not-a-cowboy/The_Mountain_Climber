@@ -13,18 +13,21 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float laneSlideSpeed = 10f;
 
     [Header("Jump Speed Boost")]
-    [SerializeField] private float jumpForwardSpeedMalt = 1.25f;
+    [SerializeField] private float jumpForwardSpeedMalt = 110f;
+    [SerializeField] private float jumpMaltDecayRate = 0.025f; 
+    [SerializeField] private float jumpMaltMinimum = 1f;
     private float baseForwardSpeed;
     private float baseJumpSpeed;
     private float baseJumpMalt;
 
     [Header("Speed Acceleration")]
-    [SerializeField] private float accelerationRate = 0.1f;
+    [SerializeField] private float accelerationRate = 0.05f;
 
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private int requiredGroundedFramesToLand = 2; 
 
     [Header("Death Settings")]
     [SerializeField] private float deathPauseDuration = 1f;
@@ -53,6 +56,7 @@ public class PlayerController : MonoBehaviour
     private float remainingJumpTime;
     private float remainingInvulnerabilityTime;
     private bool obstacleCollisionIgnored = false;
+    private float preBoostJumpMalt;
 
     private Rigidbody rb;
     private InputAction moveAction;
@@ -62,6 +66,9 @@ public class PlayerController : MonoBehaviour
     private float targetX = 0f;
     private bool isDead = false;
     private bool isCrouching = false;
+    private bool hasLeftGroundAfterJump = false;
+    private bool justJumped = false;
+    private int groundedStreak = 0; 
     private float originalY;
 
     private CapsuleCollider capsuleCollider;
@@ -121,6 +128,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+
     private void Awake()
     {
         Instance = this;
@@ -173,6 +181,7 @@ public class PlayerController : MonoBehaviour
         EnqueueInput(0);
     }
 
+
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if (isDead) return;
@@ -198,8 +207,15 @@ public class PlayerController : MonoBehaviour
 
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
         rb.AddForce(new Vector3(0f, jumpSpeed * 0.4f, jumpSpeed), ForceMode.Impulse);
-        forwardSpeed = baseForwardSpeed * jumpForwardSpeedMalt;
-    }
+
+        float speedBefore = forwardSpeed;
+        forwardSpeed = baseForwardSpeed * (1f + jumpForwardSpeedMalt / 100f);
+        wasAirborne = true;
+        hasLeftGroundAfterJump = false;
+        justJumped = true;
+        groundedStreak = 0;
+
+        }
 
     private void ExecuteMove(Vector2 input)
     {
@@ -297,6 +313,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             remainingJumpTime = duration;
+            preBoostJumpMalt = jumpForwardSpeedMalt; 
         }
 
         higherJumpCoroutine = StartCoroutine(HigherJumpSequence(remainingJumpTime, multiplier));
@@ -327,7 +344,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private IEnumerator LaunchSequence(float duration, float upwardForce,
-                                       float speedMultiplier, float collisionGracePeriod)
+                                   float speedMultiplier, float collisionGracePeriod)
     {
         isLaunched = true;
         launchYReady = false;
@@ -339,7 +356,6 @@ public class PlayerController : MonoBehaviour
         forwardSpeed = baseForwardSpeed * speedMultiplier;
 
         SetObstacleCollisionIgnored(true);
-        Debug.Log("Launch STARTED");
 
         float liftTimeout = 5f;
         float liftElapsed = 0f;
@@ -352,12 +368,13 @@ public class PlayerController : MonoBehaviour
         launchLockedY = launchTargetY;
         launchYReady = true;
 
-        if (collisionGracePeriod > 0f)
-            yield return new WaitForSeconds(collisionGracePeriod);
+        float graceRemaining = Mathf.Max(0f, collisionGracePeriod - liftElapsed);
+        if (graceRemaining > 0f)
+            yield return new WaitForSeconds(graceRemaining);
 
         SetObstacleCollisionIgnored(false);
 
-        float remaining = duration - collisionGracePeriod;
+        float remaining = duration - liftElapsed - graceRemaining;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
 
@@ -366,33 +383,28 @@ public class PlayerController : MonoBehaviour
         launchLockedY = 0f;
         launchCoroutine = null;
         forwardSpeed = baseForwardSpeed;
-        Debug.Log("Launch ENDED");
     }
 
     private IEnumerator HigherJumpSequence(float duration, float multiplier)
     {
         jumpSpeed = baseJumpSpeed * multiplier;
-        jumpForwardSpeedMalt = baseJumpMalt * multiplier;
-        Debug.Log("HigherJump STARTED");
+        jumpForwardSpeedMalt = preBoostJumpMalt * multiplier;
 
         yield return new WaitForSeconds(duration);
 
         jumpSpeed = baseJumpSpeed;
-        jumpForwardSpeedMalt = baseJumpMalt;
+        jumpForwardSpeedMalt = preBoostJumpMalt;
         higherJumpCoroutine = null;
-        Debug.Log("HigherJump ENDED");
     }
 
     private IEnumerator InvulnerabilitySequence(float duration)
     {
         isInvulnerable = true;
-        Debug.Log("Invulnerability STARTED");
 
         yield return new WaitForSeconds(duration);
 
         isInvulnerable = false;
         invulnerabilityCoroutine = null;
-        Debug.Log("Invulnerability ENDED");
     }
 
     private void Update()
@@ -412,30 +424,57 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         if (isDead) return;
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+        bool groundedThisFrame = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
+
+        if (groundedThisFrame != isGrounded)
+
+        isGrounded = groundedThisFrame;
 
         baseForwardSpeed += accelerationRate * Time.fixedDeltaTime;
 
-        float scaledLaneSlideSpeed = laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
-
-        if (!isGrounded)
-            wasAirborne = true;
-        else if (wasAirborne && isGrounded)
+        if (higherJumpCoroutine == null)
         {
-            if (!isLaunched)
-                forwardSpeed = baseForwardSpeed;
-            wasAirborne = false;
+            jumpForwardSpeedMalt = Mathf.Max(jumpMaltMinimum, jumpForwardSpeedMalt - jumpMaltDecayRate * Time.fixedDeltaTime);
         }
 
-        if (!wasAirborne && !isLaunched)
-            forwardSpeed = baseForwardSpeed;
+        if (!isGrounded)
+        {
+            wasAirborne = true;
+            hasLeftGroundAfterJump = true;
+            justJumped = false; 
+            groundedStreak = 0;
+        }
+        else
+        {
+            groundedStreak++;
+
+            if (wasAirborne)
+            {
+                if (groundedStreak >= requiredGroundedFramesToLand)
+                {
+                    if (!isLaunched && hasLeftGroundAfterJump)
+                    {
+                        forwardSpeed = baseForwardSpeed;
+                    }
+                    wasAirborne = false;
+                    hasLeftGroundAfterJump = false;
+                }
+            }
+            else if (!isLaunched && !justJumped)
+            {
+                forwardSpeed = baseForwardSpeed;
+            }
+        }
+
+
+        float scaledLaneSlideSpeed = laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
 
         float newX = Mathf.MoveTowards(rb.position.x, targetX, scaledLaneSlideSpeed * Time.fixedDeltaTime);
         rb.linearVelocity = new Vector3(
             (newX - rb.position.x) / Time.fixedDeltaTime,
             isCrouching ? 0f : (isLaunched ? 0f : rb.linearVelocity.y),
-            forwardSpeed
-        );
+            forwardSpeed);
 
         if (isLaunched)
         {
@@ -463,7 +502,6 @@ public class PlayerController : MonoBehaviour
 
                 isInvulnerable = false;
                 invulnerabilityCoroutine = null;
-                Debug.Log("Invulnerability ENDED - obstacle hit");
                 return;
             }
 

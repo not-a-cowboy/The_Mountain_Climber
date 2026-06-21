@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5803894362490839359}
   - component: {fileID: 5206362151210581627}
   - component: {fileID: 4991418734976236606}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: FallObs
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -191,6 +191,10 @@ PrefabInstance:
     - target: {fileID: 7797674794743916644, guid: 1de3f0a5ee073cb43acc679082b2638a, type: 3}
       propertyPath: m_Name
       value: Falling_Boulder
+      objectReference: {fileID: 0}
+    - target: {fileID: 7797674794743916644, guid: 1de3f0a5ee073cb43acc679082b2638a, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
