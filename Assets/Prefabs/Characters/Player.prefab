@@ -339,6 +339,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4403203613770832477, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4218336177757915048}
+    - targetCorrespondingSourceObject: {fileID: 2329883020053978735, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4840635546401990453}
   m_SourcePrefab: {fileID: 100100000, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
 --- !u!4 &37038053654742137 stripped
 Transform:
@@ -362,6 +365,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a71fce445e9de2140bd36c0c118e5e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClimberAnimController
+--- !u!1 &1623124757417155313 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2329883020053978735, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+  m_PrefabInstance: {fileID: 3950526719197562014}
+  m_PrefabAsset: {fileID: 0}
+--- !u!111 &4840635546401990453
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1623124757417155313}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_UpdateMode: 0
+  m_CullingType: 0
 --- !u!137 &7531994090350829829 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 6797079344528631195, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
