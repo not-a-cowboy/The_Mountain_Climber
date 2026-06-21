@@ -244,6 +244,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7709822338965516504}
     m_Modifications:
+    - target: {fileID: 1497959367739026974, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
+    - target: {fileID: 3180019907803405118, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
     - target: {fileID: 3913772073859055847, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -288,13 +296,65 @@ PrefabInstance:
       propertyPath: m_Name
       value: UrbanManV1
       objectReference: {fileID: 0}
+    - target: {fileID: 6797079344528631195, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
+    - target: {fileID: 6967260091427543709, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: e08202bd68c0a7742bc39f8f2856ef5f, type: 3}
+    - target: {fileID: 6967260091427543709, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 0ca7b38db884d8344976151dd9959084, type: 2}
+    - target: {fileID: 6967260091427543709, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: m_AnimatePhysics
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6967260091427543709, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: m_WarningMessage
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6967260091427543709, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7686341308376680401, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
+    - target: {fileID: 8811751836122475640, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4403203613770832477, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4218336177757915048}
   m_SourcePrefab: {fileID: 100100000, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
 --- !u!4 &37038053654742137 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3913772073859055847, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
   m_PrefabInstance: {fileID: 3950526719197562014}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &849004693587959491 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4403203613770832477, guid: 8b7b9e2c38a6928438155b25698c4297, type: 3}
+  m_PrefabInstance: {fileID: 3950526719197562014}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4218336177757915048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 849004693587959491}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a71fce445e9de2140bd36c0c118e5e03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClimberAnimController

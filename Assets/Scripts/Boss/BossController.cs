@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class BossController : MonoBehaviour
 {
     [Header("FallObs")]
@@ -27,7 +28,7 @@ public class BossController : MonoBehaviour
 
     [Header("Defeat")]
     [SerializeField] private float fallSpeed = 9.81f;
-
+    private BossAnimController bossAnim; // Reference to the boss's animation controller
     private bool activated = false;
     private float timer;
     private bool defeated = false;
@@ -57,6 +58,7 @@ public class BossController : MonoBehaviour
 
     private void Start()
     {
+        bossAnim = GetComponent<BossAnimController>(); // Get reference to the BossAnimController
         if (PlayerController.Instance == null)
             Debug.LogError("[Boss] PlayerController.Instance is null in Start.");
 
@@ -169,6 +171,7 @@ public class BossController : MonoBehaviour
 
     private void SpawnFallObsAtZ(float worldZ)
     {
+        if (bossAnim != null) bossAnim.PlayKickAnimation(); // Play the kick animation when spawning obstacles
         int count = Random.Range(1, 3);
         List<int> availableLanes = new List<int> { 0, 1, 2 };
         ShuffleList(availableLanes);

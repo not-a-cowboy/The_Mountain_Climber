@@ -209,6 +209,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7709822338965516504}
     m_Modifications:
+    - target: {fileID: 243752146537314793, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
+    - target: {fileID: 1405972322243154496, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
+    - target: {fileID: 4007841232300170147, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
+    - target: {fileID: 5038145600305407238, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1b15089f0980bc54cb3c678103ad39ce, type: 2}
     - target: {fileID: 6111938438287238245, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
       propertyPath: m_Name
       value: Arnold
@@ -253,6 +269,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 9008175486943219750, guid: 9afb1dc12d2a59943b977b60a55907e7, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: a7061be8be3c07a4998619c6e395f03f, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
