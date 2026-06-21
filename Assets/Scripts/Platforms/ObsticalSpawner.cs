@@ -16,6 +16,12 @@ public class ObstacleSpawner : MonoBehaviour
     public GameObject launchPrefab;
     public GameObject oxygenRefillPrefab;
 
+    [Header("Power-Up Spawn Heights")]
+    public float higherJumpHeightOffset = 1.566f;
+    public float invulnerabilityHeightOffset = 1f;
+    public float scoreMultiplierHeightOffset = 1f;
+    public float launchHeightOffset = 1.66f;
+    public float oxygenRefillHeightOffset = 1.46f;
 
     [Header("Spawn Settings")]
     public float spawnHeightOffset = 1f;
@@ -64,6 +70,16 @@ public class ObstacleSpawner : MonoBehaviour
         if (prefab == dodgeObsPrefab) return 1f;
         if (prefab == duckObsPrefab) return 2f;
         if (prefab == jumpObsPrefab) return 0.56f;
+        return spawnHeightOffset;
+    }
+
+    float GetPowerUpHeightOffset(GameObject prefab)
+    {
+        if (prefab == higherJumpPrefab) return higherJumpHeightOffset;
+        if (prefab == invulnerabilityPrefab) return invulnerabilityHeightOffset;
+        if (prefab == scoreMultiplierPrefab) return scoreMultiplierHeightOffset;
+        if (prefab == launchPrefab) return launchHeightOffset;
+        if (prefab == oxygenRefillPrefab) return oxygenRefillHeightOffset;
         return spawnHeightOffset;
     }
 
@@ -122,19 +138,20 @@ public class ObstacleSpawner : MonoBehaviour
     void SpawnPowerUpInLanes(List<int> availableLanes, float zOffset)
     {
         int powerUpLane = availableLanes[Random.Range(0, availableLanes.Count)];
+
+        GameObject powerUpPrefab = GetRandomPowerUpPrefab();
+        if (powerUpPrefab == null) return;
+
         Vector3 powerUpPos = new Vector3(
             laneXPositions[powerUpLane],
-            transform.position.y + spawnHeightOffset,
+            transform.position.y + GetPowerUpHeightOffset(powerUpPrefab),
             transform.position.z + zOffset
         );
 
-        GameObject powerUpPrefab = GetRandomPowerUpPrefab();
-        if (powerUpPrefab != null)
-        {
-            GameObject pu = Instantiate(powerUpPrefab, powerUpPos, Quaternion.identity);
-            pu.transform.SetParent(transform, worldPositionStays: true);
-        }
+        GameObject pu = Instantiate(powerUpPrefab, powerUpPos, Quaternion.identity);
+        pu.transform.SetParent(transform, worldPositionStays: true);
     }
+
 
     GameObject GetObstaclePrefab()
     {
