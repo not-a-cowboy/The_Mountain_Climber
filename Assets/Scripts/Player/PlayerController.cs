@@ -313,11 +313,14 @@ public class PlayerController : MonoBehaviour
         else
         {
             remainingJumpTime = duration;
-            preBoostJumpMalt = jumpForwardSpeedMalt; 
+            preBoostJumpMalt = jumpForwardSpeedMalt;
         }
+
+        HUDManager.Instance?.TrackJumpTimer(duration); // ← ADD THIS
 
         higherJumpCoroutine = StartCoroutine(HigherJumpSequence(remainingJumpTime, multiplier));
     }
+
 
     public void ApplyInvulnerability(float duration)
     {
@@ -331,17 +334,22 @@ public class PlayerController : MonoBehaviour
             remainingInvulnerabilityTime = duration;
         }
 
+        HUDManager.Instance?.TrackShieldTimer(duration); // ← ADD THIS
+
         invulnerabilityCoroutine = StartCoroutine(InvulnerabilitySequence(remainingInvulnerabilityTime));
     }
 
     public void ApplyLaunch(float duration = 5f, float upwardForce = 5f,
-                            float speedMultiplier = 3f, float collisionGracePeriod = 1f)
+                        float speedMultiplier = 3f, float collisionGracePeriod = 1f)
     {
         if (launchCoroutine != null)
             StopCoroutine(launchCoroutine);
 
+        HUDManager.Instance?.TrackLaunchTimer(duration); // ← ADD THIS
+
         launchCoroutine = StartCoroutine(LaunchSequence(duration, upwardForce, speedMultiplier, collisionGracePeriod));
     }
+
 
     private IEnumerator LaunchSequence(float duration, float upwardForce,
                                    float speedMultiplier, float collisionGracePeriod)

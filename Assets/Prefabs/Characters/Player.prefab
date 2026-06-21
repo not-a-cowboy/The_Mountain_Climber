@@ -163,7 +163,7 @@ MonoBehaviour:
   jumpSpeed: 10
   forwardSpeed: 5
   laneSlideSpeed: 10
-  jumpForwardSpeedMalt: 1.75
+  jumpForwardSpeedMalt: 110
   jumpMaltDecayRate: 0.025
   jumpMaltMinimum: 1
   accelerationRate: 0.05
@@ -178,7 +178,7 @@ MonoBehaviour:
   crouchYOffset: 0.5
   airCrouchDropForce: 20
   maxInputDelay: 0.5
-  playerHealth: {fileID: 0}
+  playerHealth: {fileID: 3219743689820701192}
 --- !u!114 &3219743689820701192
 MonoBehaviour:
   m_ObjectHideFlags: 0

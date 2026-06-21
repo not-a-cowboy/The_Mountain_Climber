@@ -64,8 +64,11 @@ public class GameManager : MonoBehaviour
 
     public void ActivateScoreMultiplier(float duration, float multiplier)
     {
+        HUDManager.Instance?.TrackScoreTimer(duration);
+
         StartCoroutine(ApplyScoreMultiplier(duration, multiplier));
     }
+
 
     public void RestartGame() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
