@@ -35,7 +35,6 @@ public class PlayerController : MonoBehaviour
     private float deathFallTimer = 0f;
 
     [Header("Crouch Settings")]
-    [SerializeField] private float crouchDuration = 1f;
     [SerializeField] private float crouchYOffset = 0.5f;
     [SerializeField] private float airCrouchDropForce = 20f;
 
@@ -246,11 +245,13 @@ public class PlayerController : MonoBehaviour
         if (isCrouching)
         {
             CancelCrouch();
-            return;
         }
-
-        crouchCoroutine = StartCoroutine(CrouchSequence());
+        else
+        {
+            crouchCoroutine = StartCoroutine(CrouchSequence());
+        }
     }
+
 
     private void CancelCrouch()
     {
@@ -285,10 +286,9 @@ public class PlayerController : MonoBehaviour
         originalY = rb.position.y;
         rb.MovePosition(new Vector3(rb.position.x, originalY - crouchYOffset, rb.position.z));
 
-        yield return new WaitForSeconds(crouchDuration);
-
-        CancelCrouch();
+        yield return new WaitUntil(() => !isCrouching);
     }
+
 
     private void SetObstacleCollisionIgnored(bool ignore)
     {
@@ -467,8 +467,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-
-        float scaledLaneSlideSpeed = laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
+        float scaledLaneSlideSpeed = (!isGrounded || isLaunched)
+            ? laneSlideSpeed
+            : laneSlideSpeed * (baseForwardSpeed / forwardSpeed);
 
         float newX = Mathf.MoveTowards(rb.position.x, targetX, scaledLaneSlideSpeed * Time.fixedDeltaTime);
         rb.linearVelocity = new Vector3(
@@ -517,18 +518,15 @@ public class PlayerController : MonoBehaviour
         rb.angularVelocity = Vector3.zero;
         rb.isKinematic = false;
 
-
         CameraController cam = Camera.main.GetComponent<CameraController>();
-        if (cam != null)
-            cam.TriggerDeathSequence();
+        if (cam != null) cam.TriggerDeathSequence();
 
         Animator animator = GetComponent<Animator>();
-        if (animator != null)
-            animator.SetTrigger("Death");
+        if (animator != null) animator.SetTrigger("Death");
 
         yield return new WaitForSeconds(deathPauseDuration);
 
-        SetObstacleCollisionIgnored(true);
+        SetObstacleCollisionIgnored(false);
 
         GameManager.Instance.TriggerGameOver();
     }
@@ -537,9 +535,17 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
+
+        if (launchCoroutine != null) StopCoroutine(launchCoroutine);
+        if (higherJumpCoroutine != null) StopCoroutine(higherJumpCoroutine);
+        if (invulnerabilityCoroutine != null) StopCoroutine(invulnerabilityCoroutine);
+
+        SetObstacleCollisionIgnored(false);
+
         playerInput.Disable();
         StartCoroutine(DeathSequence());
     }
+
 
     private void OnDrawGizmosSelected()
     {

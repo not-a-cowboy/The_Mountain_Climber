@@ -150,7 +150,7 @@ public class InventoryManager : MonoBehaviour
         {
             0 => Color.yellow,
             1 => Color.green,
-            2 => Color.cyan,
+            2 => Color.blue,
             3 => Color.magenta,
             _ => Color.white
         };
