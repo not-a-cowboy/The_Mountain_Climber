@@ -127,31 +127,59 @@ public class HUDManager : MonoBehaviour
 
     private void TrackTimer(PowerUpTimer entry, float duration)
     {
-        if (entry == null || entry.panel == null || entry.timerText == null) return;
+        if (entry == null || entry.panel == null || entry.timerText == null)
+        {
+            Debug.LogWarning($"TrackTimer aborted - entry null: {entry == null}, panel null: {entry?.panel == null}, timerText null: {entry?.timerText == null}");
+            return;
+        }
+
+        Debug.Log($"TrackTimer called for {entry.panel.name}, duration={duration}, existing coroutine={entry.coroutine != null}");
 
         if (entry.coroutine != null)
         {
             entry.remaining += duration;
+            Debug.Log($"Coroutine already running, added duration. New remaining={entry.remaining}");
             return;
         }
 
         entry.remaining = duration;
         SetPanelActive(entry, true);
         entry.coroutine = StartCoroutine(RunTimer(entry));
+        Debug.Log($"Started new coroutine for {entry.panel.name}, panel active: {entry.panel.activeInHierarchy}, text active: {entry.timerText.gameObject.activeInHierarchy}");
     }
+
 
     private IEnumerator RunTimer(PowerUpTimer entry)
     {
+        Debug.Log($"RunTimer STARTED for {entry.panel.name}");
+        int frameCount = 0;
+
         while (entry.remaining > 0f)
         {
             entry.remaining -= Time.deltaTime;
             entry.timerText.text = Mathf.CeilToInt(Mathf.Max(0f, entry.remaining)).ToString();
+
+            if (frameCount < 5 || frameCount % 30 == 0)
+            {
+                Debug.Log($"RunTimer tick [{entry.panel.name}]: remaining={entry.remaining:F2}, text set to '{entry.timerText.text}'");
+
+                RectTransform rt = entry.timerText.rectTransform;
+                Debug.Log($"... rect size={rt.rect.width}x{rt.rect.height}, localPos={rt.localPosition}, worldPos={rt.position}, siblingIndex={rt.GetSiblingIndex()}, parentSiblingCount={rt.parent.childCount}");
+
+                Image panelImg = entry.panel.GetComponent<Image>();
+                Debug.Log($"... panelImage siblingIndex={panelImg?.transform.GetSiblingIndex()}, raycastTarget={entry.timerText.raycastTarget}, fontAsset={entry.timerText.font?.name}");
+            }
+            frameCount++;
+
             yield return null;
         }
 
+
+        Debug.Log($"RunTimer FINISHED for {entry.panel.name}");
         entry.timerText.text = "0";
         SetPanelActive(entry, false);
         entry.coroutine = null;
         entry.remaining = 0f;
     }
+
 }

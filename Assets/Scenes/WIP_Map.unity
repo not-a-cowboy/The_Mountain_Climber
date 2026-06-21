@@ -1376,7 +1376,7 @@ GameObject:
   - component: {fileID: 659794552}
   - component: {fileID: 659794551}
   m_Layer: 5
-  m_Name: TimerPanel (1)
+  m_Name: InvulPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1452,7 +1452,7 @@ GameObject:
   - component: {fileID: 744960302}
   - component: {fileID: 744960301}
   m_Layer: 5
-  m_Name: Timer
+  m_Name: BoostTimer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1467,14 +1467,14 @@ RectTransform:
   m_GameObject: {fileID: 744960299}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 15.75, y: 15.75, z: 15.75}
+  m_LocalScale: {x: 15.750001, y: 15.750001, z: 15.750001}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1125217342}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.21923828, y: -1.2612915}
+  m_AnchoredPosition: {x: -0.60072327, y: -3.4749985}
   m_SizeDelta: {x: -187.21399, y: -43.448975}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &744960301
@@ -1766,20 +1766,20 @@ MonoBehaviour:
   healthFill: {fileID: 284907996}
   playerHealth: {fileID: 2003819326}
   jumpTimer:
-    panel: {fileID: 0}
-    timerText: {fileID: 0}
+    panel: {fileID: 2103642434}
+    timerText: {fileID: 1023733435}
     remaining: 0
   shieldTimer:
-    panel: {fileID: 0}
-    timerText: {fileID: 0}
+    panel: {fileID: 659794549}
+    timerText: {fileID: 1865124659}
     remaining: 0
   scoreTimer:
-    panel: {fileID: 0}
-    timerText: {fileID: 0}
+    panel: {fileID: 2060452649}
+    timerText: {fileID: 1305175141}
     remaining: 0
   launchTimer:
-    panel: {fileID: 0}
-    timerText: {fileID: 0}
+    panel: {fileID: 1125217341}
+    timerText: {fileID: 744960301}
     remaining: 0
 --- !u!114 &908683378
 MonoBehaviour:
@@ -2212,7 +2212,7 @@ GameObject:
   - component: {fileID: 1023733436}
   - component: {fileID: 1023733435}
   m_Layer: 5
-  m_Name: Timer
+  m_Name: JumpTimer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2234,7 +2234,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.21923828, y: -1.2612915}
+  m_AnchoredPosition: {x: -0.55439, y: -3.2093}
   m_SizeDelta: {x: -187.21399, y: -43.448975}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1023733435
@@ -2468,7 +2468,7 @@ GameObject:
   - component: {fileID: 1125217344}
   - component: {fileID: 1125217343}
   m_Layer: 5
-  m_Name: TimerPanel (3)
+  m_Name: BoostPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2823,7 +2823,7 @@ GameObject:
   - component: {fileID: 1305175142}
   - component: {fileID: 1305175141}
   m_Layer: 5
-  m_Name: Timer
+  m_Name: ScoreTimer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2845,7 +2845,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.21923828, y: -1.2612915}
+  m_AnchoredPosition: {x: -0.62931, y: -3.6409}
   m_SizeDelta: {x: -187.21399, y: -43.448975}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1305175141
@@ -4596,7 +4596,7 @@ GameObject:
   - component: {fileID: 1865124660}
   - component: {fileID: 1865124659}
   m_Layer: 5
-  m_Name: Timer
+  m_Name: InvulTimer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4618,7 +4618,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.21923828, y: -1.2612915}
+  m_AnchoredPosition: {x: -0.6422882, y: -3.7201996}
   m_SizeDelta: {x: -187.21399, y: -43.448975}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1865124659
@@ -5216,7 +5216,7 @@ GameObject:
   - component: {fileID: 2060452652}
   - component: {fileID: 2060452651}
   m_Layer: 5
-  m_Name: TimerPanel (2)
+  m_Name: ScorePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5302,7 +5302,7 @@ GameObject:
   - component: {fileID: 2103642437}
   - component: {fileID: 2103642436}
   m_Layer: 5
-  m_Name: TimerPanel
+  m_Name: JumpPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5549,7 +5549,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7709822338965516504, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -13.18
+      value: -11.8
       objectReference: {fileID: 0}
     - target: {fileID: 7709822338965516504, guid: 125bf49bb53eb98488d1b9793f3c51aa, type: 3}
       propertyPath: m_LocalRotation.w
