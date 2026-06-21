@@ -14,15 +14,31 @@ public class GameManager : MonoBehaviour
     public event System.Action OnBossWarning;
     public event System.Action OnBossDefeated;
 
+    // --- Required event system (8 distinct events) ---
+    public event System.Action OnObstaclePassed;
+    public event System.Action OnPickup1Activated;
+    public event System.Action OnPickup2Activated;
+    public event System.Action OnPickup3Activated;
+    public event System.Action OnBoss1Spawned;
+    public event System.Action OnBoss2Spawned;
+    // OnBossDefeated above already serves as the "boss beaten" event
+
     private bool bossThresholdFired = false;
     private bool bossWarningFired = false;
     private const float BossScoreThreshold = 80f;
     private const float BossWarningThreshold = 75f;
 
+    // --- Level looping state ---
+    [SerializeField] private int levelsCompleted = 0;
+
+    // --- Used when saving score to the DB on death ---
+    [SerializeField] private string playerName = "Player";
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     private void Start() { ResetGame(); }
@@ -31,13 +47,11 @@ public class GameManager : MonoBehaviour
     {
         if (IsGameOver) return;
         Score += Time.deltaTime * ScoreMultiplier;
-
         if (!bossThresholdFired && Score >= BossScoreThreshold)
         {
             bossThresholdFired = true;
             OnBossThreshold?.Invoke();
         }
-
         if (!bossWarningFired && Score >= BossWarningThreshold)
         {
             bossWarningFired = true;
@@ -53,22 +67,59 @@ public class GameManager : MonoBehaviour
     public void NotifyBossDefeated()
     {
         OnBossDefeated?.Invoke();
+        levelsCompleted++;
+    }
+
+    public void NotifyObstaclePassed()
+    {
+        OnObstaclePassed?.Invoke();
+    }
+
+    public void NotifyPickupActivated(int pickupNumber)
+    {
+        switch (pickupNumber)
+        {
+            case 1: OnPickup1Activated?.Invoke(); break;
+            case 2: OnPickup2Activated?.Invoke(); break;
+            case 3: OnPickup3Activated?.Invoke(); break;
+            default: Debug.LogWarning($"[GameManager] Unknown pickup number: {pickupNumber}"); break;
+        }
+    }
+
+    public void NotifyBossSpawned(int bossNumber)
+    {
+        switch (bossNumber)
+        {
+            case 1: OnBoss1Spawned?.Invoke(); break;
+            case 2: OnBoss2Spawned?.Invoke(); break;
+            default: Debug.LogWarning($"[GameManager] Unknown boss number: {bossNumber}"); break;
+        }
+    }
+
+    public int GetNextLevelIndex()
+    {
+        if (levelsCompleted < 2)
+        {
+            return levelsCompleted; 
+        }
+        return Random.Range(0, 2); 
     }
 
     public void TriggerGameOver()
     {
         if (IsGameOver) return;
         IsGameOver = true;
+
+        DatabaseManager.Instance?.SaveScore(playerName, Mathf.RoundToInt(Score), levelsCompleted);
+
         OnGameOver?.Invoke();
     }
 
     public void ActivateScoreMultiplier(float duration, float multiplier)
     {
         HUDManager.Instance?.TrackScoreTimer(duration);
-
         StartCoroutine(ApplyScoreMultiplier(duration, multiplier));
     }
-
 
     public void RestartGame() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 
