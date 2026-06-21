@@ -14,8 +14,8 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump Speed Boost")]
     [SerializeField] private float jumpForwardSpeedMalt = 110f;
-    [SerializeField] private float jumpMaltDecayRate = 0.025f; // NEW: how much jumpForwardSpeedMalt decreases per second, mirroring accelerationRate's per-second growth
-    [SerializeField] private float jumpMaltMinimum = 1f;        // NEW: floor — malt never decays below this
+    [SerializeField] private float jumpMaltDecayRate = 0.025f; 
+    [SerializeField] private float jumpMaltMinimum = 1f;
     private float baseForwardSpeed;
     private float baseJumpSpeed;
     private float baseJumpMalt;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private int requiredGroundedFramesToLand = 2; // consecutive grounded FixedUpdate ticks needed before treating it as a real landing (filters 1-tick ground-check flicker)
+    [SerializeField] private int requiredGroundedFramesToLand = 2; 
 
     [Header("Death Settings")]
     [SerializeField] private float deathPauseDuration = 1f;
@@ -114,7 +114,6 @@ public class PlayerController : MonoBehaviour
         while (queueCount > 0)
         {
             ref PendingInput next = ref inputQueue[queueHead];
-            Debug.Log($"[DRAIN] type={next.type} | fireAt={next.fireAt:F3} | Time.time={Time.time:F3} | will fire={Time.time >= next.fireAt}");
             if (Time.time < next.fireAt) break;
 
             switch (next.type)
@@ -179,7 +178,6 @@ public class PlayerController : MonoBehaviour
     private void OnJump(InputAction.CallbackContext ctx)
     {
         if (isDead) return;
-        Debug.Log($"[ON_JUMP] InputDelay={InputDelay:F3} | HPPercent={playerHealth?.HPPercent:F3} | fireAt={Time.time + InputDelay:F3} | Time.time={Time.time:F3}");
         EnqueueInput(0);
     }
 
@@ -198,7 +196,6 @@ public class PlayerController : MonoBehaviour
 
     private void ExecuteJump()
     {
-        Debug.Log($"[EXECUTE_JUMP CALLED] isGrounded={isGrounded} | isDead={isDead} | isLaunched={isLaunched} | isCrouching={isCrouching}");
         if (isLaunched) return;
         if (!isGrounded || isDead) return;
 
@@ -218,8 +215,7 @@ public class PlayerController : MonoBehaviour
         justJumped = true;
         groundedStreak = 0;
 
-        Debug.Log($"[JUMP] baseForwardSpeed={baseForwardSpeed:F2} | jumpForwardSpeedMalt={jumpForwardSpeedMalt:F2} | speedBefore={speedBefore:F2} | forwardSpeed AFTER={forwardSpeed:F2} | wasAirborne={wasAirborne}");
-    }
+        }
 
     private void ExecuteMove(Vector2 input)
     {
@@ -348,7 +344,7 @@ public class PlayerController : MonoBehaviour
     }
 
     private IEnumerator LaunchSequence(float duration, float upwardForce,
-                                       float speedMultiplier, float collisionGracePeriod)
+                                   float speedMultiplier, float collisionGracePeriod)
     {
         isLaunched = true;
         launchYReady = false;
@@ -360,7 +356,6 @@ public class PlayerController : MonoBehaviour
         forwardSpeed = baseForwardSpeed * speedMultiplier;
 
         SetObstacleCollisionIgnored(true);
-        Debug.Log("Launch STARTED");
 
         float liftTimeout = 5f;
         float liftElapsed = 0f;
@@ -373,12 +368,13 @@ public class PlayerController : MonoBehaviour
         launchLockedY = launchTargetY;
         launchYReady = true;
 
-        if (collisionGracePeriod > 0f)
-            yield return new WaitForSeconds(collisionGracePeriod);
+        float graceRemaining = Mathf.Max(0f, collisionGracePeriod - liftElapsed);
+        if (graceRemaining > 0f)
+            yield return new WaitForSeconds(graceRemaining);
 
         SetObstacleCollisionIgnored(false);
 
-        float remaining = duration - collisionGracePeriod;
+        float remaining = duration - liftElapsed - graceRemaining;
         if (remaining > 0f)
             yield return new WaitForSeconds(remaining);
 
@@ -387,33 +383,28 @@ public class PlayerController : MonoBehaviour
         launchLockedY = 0f;
         launchCoroutine = null;
         forwardSpeed = baseForwardSpeed;
-        Debug.Log("Launch ENDED");
     }
 
     private IEnumerator HigherJumpSequence(float duration, float multiplier)
     {
         jumpSpeed = baseJumpSpeed * multiplier;
         jumpForwardSpeedMalt = preBoostJumpMalt * multiplier;
-        Debug.Log("HigherJump STARTED");
 
         yield return new WaitForSeconds(duration);
 
         jumpSpeed = baseJumpSpeed;
         jumpForwardSpeedMalt = preBoostJumpMalt;
         higherJumpCoroutine = null;
-        Debug.Log("HigherJump ENDED");
     }
 
     private IEnumerator InvulnerabilitySequence(float duration)
     {
         isInvulnerable = true;
-        Debug.Log("Invulnerability STARTED");
 
         yield return new WaitForSeconds(duration);
 
         isInvulnerable = false;
         invulnerabilityCoroutine = null;
-        Debug.Log("Invulnerability ENDED");
     }
 
     private void Update()
@@ -437,14 +428,11 @@ public class PlayerController : MonoBehaviour
         bool groundedThisFrame = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (groundedThisFrame != isGrounded)
-            Debug.Log($"[GROUND] isGrounded changed: {isGrounded} → {groundedThisFrame} | wasAirborne={wasAirborne}");
 
         isGrounded = groundedThisFrame;
 
         baseForwardSpeed += accelerationRate * Time.fixedDeltaTime;
 
-        // NEW: jumpForwardSpeedMalt decays at the same per-second pace baseForwardSpeed grows,
-        // but only while no HigherJump power-up is active (that coroutine owns the value while it runs).
         if (higherJumpCoroutine == null)
         {
             jumpForwardSpeedMalt = Mathf.Max(jumpMaltMinimum, jumpForwardSpeedMalt - jumpMaltDecayRate * Time.fixedDeltaTime);
@@ -454,34 +442,24 @@ public class PlayerController : MonoBehaviour
         {
             wasAirborne = true;
             hasLeftGroundAfterJump = true;
-            justJumped = false; // we've actually left the ground now, safe to allow future resets
-            groundedStreak = 0; // not grounded, so the streak resets
+            justJumped = false; 
+            groundedStreak = 0;
         }
         else
         {
-            groundedStreak++; // count consecutive grounded ticks
+            groundedStreak++;
 
             if (wasAirborne)
             {
-                // Only treat this as a real landing once we've been grounded for
-                // several consecutive ticks — a single-tick ground touch is almost
-                // always physics flicker (e.g. settling from the previous landing),
-                // not an actual landing, and resetting forwardSpeed on it wipes out
-                // the jump boost before the player ever feels it.
                 if (groundedStreak >= requiredGroundedFramesToLand)
                 {
                     if (!isLaunched && hasLeftGroundAfterJump)
                     {
-                        Debug.Log($"[LAND] Resetting forwardSpeed from {forwardSpeed:F2} to baseForwardSpeed {baseForwardSpeed:F2}");
                         forwardSpeed = baseForwardSpeed;
                     }
                     wasAirborne = false;
                     hasLeftGroundAfterJump = false;
                 }
-                // else: still within the flicker window — stay logically airborne,
-                // keep the boosted forwardSpeed, and wait for either more real
-                // grounded ticks (-> landing above) or another !isGrounded tick
-                // (-> groundedStreak resets to 0 and we keep waiting).
             }
             else if (!isLaunched && !justJumped)
             {
@@ -497,8 +475,6 @@ public class PlayerController : MonoBehaviour
             (newX - rb.position.x) / Time.fixedDeltaTime,
             isCrouching ? 0f : (isLaunched ? 0f : rb.linearVelocity.y),
             forwardSpeed);
-
-        Debug.Log($"[FIXEDUPDATE] forwardSpeed={forwardSpeed:F2} | base={baseForwardSpeed:F2} | vel.z={rb.linearVelocity.z:F2} | grounded={isGrounded} | wasAirborne={wasAirborne} | isLaunched={isLaunched}");
 
         if (isLaunched)
         {
@@ -526,7 +502,6 @@ public class PlayerController : MonoBehaviour
 
                 isInvulnerable = false;
                 invulnerabilityCoroutine = null;
-                Debug.Log("Invulnerability ENDED - obstacle hit");
                 return;
             }
 

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1875494194311543166}
   - component: {fileID: 5148558940562834754}
   - component: {fileID: 2945904736740775872}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: dodgeObs
   m_TagString: Obstacle
   m_Icon: {fileID: 0}
@@ -121,9 +121,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 7942405714493119929}
     m_Modifications:
+    - target: {fileID: 268564716734503365, guid: 5322ee8b4ab3ca1429ec8765c1f938e5, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 357799166524970736, guid: 5322ee8b4ab3ca1429ec8765c1f938e5, type: 3}
       propertyPath: m_Name
       value: Cliff_face_rock
+      objectReference: {fileID: 0}
+    - target: {fileID: 357799166524970736, guid: 5322ee8b4ab3ca1429ec8765c1f938e5, type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 1134054841360223306, guid: 5322ee8b4ab3ca1429ec8765c1f938e5, type: 3}
       propertyPath: m_LocalScale.x
