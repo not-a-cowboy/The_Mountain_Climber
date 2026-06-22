@@ -1709,6 +1709,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MainMenuManager
   gameSceneName: WIP_Map
+  leaderboardPanel: {fileID: 0}
+  leaderboardUI: {fileID: 0}
 --- !u!4 &1208530579
 Transform:
   m_ObjectHideFlags: 0
@@ -1946,6 +1948,7 @@ GameObject:
   - component: {fileID: 1491224764}
   - component: {fileID: 1491224763}
   - component: {fileID: 1491224762}
+  - component: {fileID: 1491224766}
   m_Layer: 5
   m_Name: MainMenu
   m_TagString: Untagged
@@ -2041,6 +2044,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1491224766
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1491224761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80f7bb17969a48f41bb3d0d09266371d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MainMenuManager
+  gameSceneName: WIP_Map
+  leaderboardPanel: {fileID: 0}
+  leaderboardUI: {fileID: 0}
 --- !u!1001 &1589804577
 PrefabInstance:
   m_ObjectHideFlags: 0

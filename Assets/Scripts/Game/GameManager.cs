@@ -5,6 +5,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+
     public float Score { get; private set; }
     public float ScoreMultiplier { get; private set; } = 1f;
     public bool IsGameOver { get; private set; }
@@ -13,7 +14,6 @@ public class GameManager : MonoBehaviour
     public event System.Action OnBossThreshold;
     public event System.Action OnBossWarning;
     public event System.Action OnBossDefeated;
-
     public event System.Action OnObstaclePassed;
     public event System.Action OnPickup1Activated;
     public event System.Action OnPickup2Activated;
@@ -23,31 +23,43 @@ public class GameManager : MonoBehaviour
 
     private bool bossThresholdFired = false;
     private bool bossWarningFired = false;
+
     private const float BossScoreThreshold = 80f;
     private const float BossWarningThreshold = 75f;
 
-    [SerializeField] private int levelsCompleted = 0;
+    [SerializeField] public int levelsCompleted = 0;
 
-    [SerializeField] private string playerName = "Player";
+    private string playerName = "Player";
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Start() { ResetGame(); }
+    private void Start()
+    {
+        ResetGame();
+    }
 
     private void Update()
     {
         if (IsGameOver) return;
+
         Score += Time.deltaTime * ScoreMultiplier;
+
         if (!bossThresholdFired && Score >= BossScoreThreshold)
         {
             bossThresholdFired = true;
             OnBossThreshold?.Invoke();
         }
+
         if (!bossWarningFired && Score >= BossWarningThreshold)
         {
             bossWarningFired = true;
@@ -55,27 +67,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void NotifyBossIncoming()
+    public string PlayerName
     {
-        OnBossThreshold?.Invoke();
+        get => playerName;
+        set => playerName = string.IsNullOrWhiteSpace(value) ? "Player" : value.Trim();
     }
 
-    public void NotifyBossWarning()
-    {
-        OnBossWarning?.Invoke();
-    }
-
+    public void NotifyBossIncoming() => OnBossThreshold?.Invoke();
+    public void NotifyBossWarning() => OnBossWarning?.Invoke();
     public void NotifyBossDefeated()
     {
         OnBossDefeated?.Invoke();
         levelsCompleted++;
     }
 
-    public void NotifyObstaclePassed()
-    {
-        OnObstaclePassed?.Invoke();
-    }
-
+    public void NotifyObstaclePassed() => OnObstaclePassed?.Invoke();
     public void NotifyPickupActivated(int pickupNumber)
     {
         switch (pickupNumber)
@@ -109,9 +115,10 @@ public class GameManager : MonoBehaviour
     public void TriggerGameOver()
     {
         if (IsGameOver) return;
+
         IsGameOver = true;
 
-        DatabaseManager.Instance?.SaveScore(playerName, Mathf.RoundToInt(Score), levelsCompleted);
+        DatabaseManager.Instance?.SaveScore(PlayerName, Mathf.RoundToInt(Score), levelsCompleted);
 
         OnGameOver?.Invoke();
     }
@@ -120,6 +127,14 @@ public class GameManager : MonoBehaviour
     {
         HUDManager.Instance?.TrackScoreTimer(duration);
         StartCoroutine(ApplyScoreMultiplier(duration, multiplier));
+    }
+
+    private IEnumerator ApplyScoreMultiplier(float duration, float multiplier)
+    {
+        float original = ScoreMultiplier;
+        ScoreMultiplier = multiplier;
+        yield return new WaitForSeconds(duration);
+        ScoreMultiplier = original;
     }
 
     public void RestartGame() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
@@ -131,13 +146,8 @@ public class GameManager : MonoBehaviour
         IsGameOver = false;
         bossThresholdFired = false;
         bossWarningFired = false;
+        levelsCompleted = 0;
     }
 
-    private IEnumerator ApplyScoreMultiplier(float duration, float multiplier)
-    {
-        float original = ScoreMultiplier;
-        ScoreMultiplier = multiplier;
-        yield return new WaitForSeconds(duration);
-        ScoreMultiplier = original;
-    }
+    public void ResetPlayerName() => playerName = "Player";
 }
