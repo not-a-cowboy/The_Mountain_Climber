@@ -121,9 +121,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8123132036204664332}
     m_Modifications:
+    - target: {fileID: 5304116804690932541, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: ecd1395c2a722aa4baa30f7b5a72984c, type: 2}
     - target: {fileID: 5952912433745482472, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_Name
-      value: Slippery_Rock
+      value: Slippery_Ice
       objectReference: {fileID: 0}
     - target: {fileID: 5952912433745482472, guid: 7d8ae8c96c2b83f46a18ad5339a4cdde, type: 3}
       propertyPath: m_Layer
