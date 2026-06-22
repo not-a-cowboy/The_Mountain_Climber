@@ -37,12 +37,6 @@ public class MainMenuManager : MonoBehaviour
 
     public void OpenLeaderboard()
     {
-        if (leaderboardPanel == null || leaderboardUI == null)
-        {
-            Debug.LogError("[MainMenuManager] Leaderboard references are not assigned in the Inspector!");
-            return;
-        }
-
         leaderboardPanel.SetActive(true);
         leaderboardUI.ShowLeaderboard();
     }

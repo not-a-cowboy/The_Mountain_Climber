@@ -10,23 +10,15 @@ public class LeaderboardUI : MonoBehaviour
 
     public void ShowLeaderboard()
     {
-        if (contentParent == null)
+        if (contentParent == null || rowPrefab == null)
         {
-            Debug.LogError("Content Parent not assigned!");
-            return;
-        }
-
-        if (rowPrefab == null)
-        {
-            Debug.LogError("Row Prefab not assigned!");
+            Debug.LogError("LeaderboardUI: Missing references!");
             return;
         }
 
         ClearRows();
 
         var scores = DatabaseManager.Instance.GetTopScores(10);
-
-        Debug.Log($" Loaded {scores.Count} high scores");
 
         for (int i = 0; i < scores.Count; i++)
         {
@@ -37,24 +29,18 @@ public class LeaderboardUI : MonoBehaviour
 
             if (texts.Length >= 3)
             {
-                texts[0].text = (i + 1) + ".";
+                texts[0].text = $"{i + 1}.";
                 texts[1].text = entry.PlayerName;
-                texts[2].text = entry.Score.ToString();
+                texts[2].text = entry.Score.ToString("N0");
             }
         }
     }
 
     private void ClearRows()
     {
-        if (contentParent == null) return;
-
         for (int i = contentParent.childCount - 1; i >= 0; i--)
         {
-            var child = contentParent.GetChild(i);
-            if (child != null && child.gameObject != rowPrefab)
-            {
-                Destroy(child.gameObject);
-            }
+            Destroy(contentParent.GetChild(i).gameObject);
         }
     }
 }
