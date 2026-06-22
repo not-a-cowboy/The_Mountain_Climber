@@ -1135,6 +1135,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_Face (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1711106204239417406, guid: 9e80981ab94b95145b8d9bdb4d0cb29f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5c61bb31b907fe9479dda2e5c38b7767, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3335,6 +3339,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_Face
       objectReference: {fileID: 0}
+    - target: {fileID: 1711106204239417406, guid: 9e80981ab94b95145b8d9bdb4d0cb29f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 1a34827ecd051ae47bb5bdd26582a038, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3785,6 +3793,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Rock_Face (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 1711106204239417406, guid: 9e80981ab94b95145b8d9bdb4d0cb29f, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 5c61bb31b907fe9479dda2e5c38b7767, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
