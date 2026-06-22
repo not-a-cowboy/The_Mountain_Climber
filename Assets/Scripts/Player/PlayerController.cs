@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jump Speed Boost")]
     [SerializeField] private float jumpForwardSpeedMalt = 110f;
-    [SerializeField] private float jumpMaltDecayRate = 0.025f; 
+    [SerializeField] private float jumpMaltDecayRate = 0.025f;
     [SerializeField] private float jumpMaltMinimum = 1f;
     private float baseForwardSpeed;
     private float baseJumpSpeed;
@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private int requiredGroundedFramesToLand = 2; 
+    [SerializeField] private int requiredGroundedFramesToLand = 2;
 
     [Header("Death Settings")]
     [SerializeField] private float deathPauseDuration = 1f;
@@ -57,6 +57,9 @@ public class PlayerController : MonoBehaviour
     private bool obstacleCollisionIgnored = false;
     private float preBoostJumpMalt;
 
+    private bool birdGrabbed = false;
+    private Transform birdCarryPoint = null;
+
     private Rigidbody rb;
     private InputAction moveAction;
     private bool isGrounded;
@@ -67,7 +70,7 @@ public class PlayerController : MonoBehaviour
     private bool isCrouching = false;
     private bool hasLeftGroundAfterJump = false;
     private bool justJumped = false;
-    private int groundedStreak = 0; 
+    private int groundedStreak = 0;
     private float originalY;
 
     private CapsuleCollider capsuleCollider;
@@ -127,7 +130,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     private void Awake()
     {
         Instance = this;
@@ -180,7 +182,6 @@ public class PlayerController : MonoBehaviour
         EnqueueInput(0);
     }
 
-
     private void OnMove(InputAction.CallbackContext ctx)
     {
         if (isDead) return;
@@ -196,6 +197,7 @@ public class PlayerController : MonoBehaviour
     private void ExecuteJump()
     {
         if (isLaunched) return;
+        if (birdGrabbed) return;
         if (!isGrounded || isDead) return;
 
         if (isCrouching)
@@ -207,18 +209,18 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, 0f);
         rb.AddForce(new Vector3(0f, jumpSpeed * 0.4f, jumpSpeed), ForceMode.Impulse);
 
-        float speedBefore = forwardSpeed;
         forwardSpeed = baseForwardSpeed * (1f + jumpForwardSpeedMalt / 100f);
         wasAirborne = true;
         hasLeftGroundAfterJump = false;
         justJumped = true;
         groundedStreak = 0;
-
-        }
+    }
 
     private void ExecuteMove(Vector2 input)
     {
         if (isDead) return;
+        if (birdGrabbed) return;
+
         if (input.x > 0.5f && currentLane < 1)
         {
             currentLane++;
@@ -235,6 +237,7 @@ public class PlayerController : MonoBehaviour
     {
         if (isDead) return;
         if (isLaunched) return;
+        if (birdGrabbed) return;
 
         if (!isGrounded)
         {
@@ -243,15 +246,10 @@ public class PlayerController : MonoBehaviour
         }
 
         if (isCrouching)
-        {
             CancelCrouch();
-        }
         else
-        {
             crouchCoroutine = StartCoroutine(CrouchSequence());
-        }
     }
-
 
     private void CancelCrouch()
     {
@@ -289,7 +287,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitUntil(() => !isCrouching);
     }
 
-
     private void SetObstacleCollisionIgnored(bool ignore)
     {
         int obstacleLayer = LayerMask.NameToLayer("Obstacle");
@@ -316,11 +313,9 @@ public class PlayerController : MonoBehaviour
             preBoostJumpMalt = jumpForwardSpeedMalt;
         }
 
-        HUDManager.Instance?.TrackJumpTimer(duration); // ← ADD THIS
-
+        HUDManager.Instance?.TrackJumpTimer(duration);
         higherJumpCoroutine = StartCoroutine(HigherJumpSequence(remainingJumpTime, multiplier));
     }
-
 
     public void ApplyInvulnerability(float duration)
     {
@@ -334,25 +329,22 @@ public class PlayerController : MonoBehaviour
             remainingInvulnerabilityTime = duration;
         }
 
-        HUDManager.Instance?.TrackShieldTimer(duration); // ← ADD THIS
-
+        HUDManager.Instance?.TrackShieldTimer(duration);
         invulnerabilityCoroutine = StartCoroutine(InvulnerabilitySequence(remainingInvulnerabilityTime));
     }
 
     public void ApplyLaunch(float duration = 5f, float upwardForce = 5f,
-                        float speedMultiplier = 3f, float collisionGracePeriod = 1f)
+                            float speedMultiplier = 3f, float collisionGracePeriod = 1f)
     {
         if (launchCoroutine != null)
             StopCoroutine(launchCoroutine);
 
-        HUDManager.Instance?.TrackLaunchTimer(duration); // ← ADD THIS
-
+        HUDManager.Instance?.TrackLaunchTimer(duration);
         launchCoroutine = StartCoroutine(LaunchSequence(duration, upwardForce, speedMultiplier, collisionGracePeriod));
     }
 
-
     private IEnumerator LaunchSequence(float duration, float upwardForce,
-                                   float speedMultiplier, float collisionGracePeriod)
+                                       float speedMultiplier, float collisionGracePeriod)
     {
         isLaunched = true;
         launchYReady = false;
@@ -417,6 +409,11 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (birdCarryPoint != null)
+        {
+            rb.MovePosition(birdCarryPoint.position);
+        }
+
         if (!isDead)
             DrainInputQueue();
 
@@ -431,26 +428,34 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (birdCarryPoint != null) return;
+
         if (isDead) return;
 
         bool groundedThisFrame = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (groundedThisFrame != isGrounded)
+            isGrounded = groundedThisFrame;
 
-        isGrounded = groundedThisFrame;
+        if (birdGrabbed && isGrounded && birdCarryPoint == null)
+        {
+            birdGrabbed = false;
+            Debug.Log("[PlayerController] Landed after bird drop — control restored.");
+        }
 
         baseForwardSpeed += accelerationRate * Time.fixedDeltaTime;
 
         if (higherJumpCoroutine == null)
         {
-            jumpForwardSpeedMalt = Mathf.Max(jumpMaltMinimum, jumpForwardSpeedMalt - jumpMaltDecayRate * Time.fixedDeltaTime);
+            jumpForwardSpeedMalt = Mathf.Max(jumpMaltMinimum,
+                jumpForwardSpeedMalt - jumpMaltDecayRate * Time.fixedDeltaTime);
         }
 
         if (!isGrounded)
         {
             wasAirborne = true;
             hasLeftGroundAfterJump = true;
-            justJumped = false; 
+            justJumped = false;
             groundedStreak = 0;
         }
         else
@@ -462,9 +467,8 @@ public class PlayerController : MonoBehaviour
                 if (groundedStreak >= requiredGroundedFramesToLand)
                 {
                     if (!isLaunched && hasLeftGroundAfterJump)
-                    {
                         forwardSpeed = baseForwardSpeed;
-                    }
+
                     wasAirborne = false;
                     hasLeftGroundAfterJump = false;
                 }
@@ -493,7 +497,10 @@ public class PlayerController : MonoBehaviour
             rb.MovePosition(new Vector3(newX, targetY, rb.position.z + forwardSpeed * Time.fixedDeltaTime));
         }
         else if (isCrouching)
-            rb.MovePosition(new Vector3(newX, originalY - crouchYOffset, rb.position.z + forwardSpeed * Time.fixedDeltaTime));
+        {
+            rb.MovePosition(new Vector3(newX, originalY - crouchYOffset,
+                rb.position.z + forwardSpeed * Time.fixedDeltaTime));
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -535,7 +542,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(deathPauseDuration);
 
         SetObstacleCollisionIgnored(false);
-
         GameManager.Instance.TriggerGameOver();
     }
 
@@ -548,12 +554,50 @@ public class PlayerController : MonoBehaviour
         if (higherJumpCoroutine != null) StopCoroutine(higherJumpCoroutine);
         if (invulnerabilityCoroutine != null) StopCoroutine(invulnerabilityCoroutine);
 
-        SetObstacleCollisionIgnored(false);
+        if (birdGrabbed)
+        {
+            birdCarryPoint = null;
+            birdGrabbed = false;
+            rb.isKinematic = false;
+        }
 
+        SetObstacleCollisionIgnored(false);
         playerInput.Disable();
         StartCoroutine(DeathSequence());
     }
 
+    public void LockForBirdGrab(Transform carryPoint)
+    {
+        if (isDead) return;
+
+        birdGrabbed = true;
+        birdCarryPoint = carryPoint;
+
+        if (isCrouching) CancelCrouch();
+        if (isLaunched)
+        {
+            if (launchCoroutine != null) StopCoroutine(launchCoroutine);
+            isLaunched = false;
+            launchYReady = false;
+            launchCoroutine = null;
+            forwardSpeed = baseForwardSpeed;
+        }
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        rb.isKinematic = true;
+
+        Debug.Log("[PlayerController] Locked by bird grab.");
+    }
+
+    public void ReleaseFromBirdGrab()
+    {
+        birdCarryPoint = null;
+
+        rb.isKinematic = false;
+        rb.linearVelocity = Vector3.down * 2f;
+        Debug.Log("[PlayerController] Released from bird — falling.");
+    }
 
     private void OnDrawGizmosSelected()
     {

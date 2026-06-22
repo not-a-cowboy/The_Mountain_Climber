@@ -296,7 +296,7 @@ GameObject:
   - component: {fileID: 558561796173829183}
   - component: {fileID: 3505957973033874299}
   m_Layer: 6
-  m_Name: PlatformStarter
+  m_Name: SnowPlatformStarter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

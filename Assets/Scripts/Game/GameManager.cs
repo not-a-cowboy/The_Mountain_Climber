@@ -14,24 +14,20 @@ public class GameManager : MonoBehaviour
     public event System.Action OnBossWarning;
     public event System.Action OnBossDefeated;
 
-    // --- Required event system (8 distinct events) ---
     public event System.Action OnObstaclePassed;
     public event System.Action OnPickup1Activated;
     public event System.Action OnPickup2Activated;
     public event System.Action OnPickup3Activated;
     public event System.Action OnBoss1Spawned;
     public event System.Action OnBoss2Spawned;
-    // OnBossDefeated above already serves as the "boss beaten" event
 
     private bool bossThresholdFired = false;
     private bool bossWarningFired = false;
-    private const float BossScoreThreshold = 80f;
-    private const float BossWarningThreshold = 75f;
+    private const float BossScoreThreshold = 30f;   //80f;
+    private const float BossWarningThreshold = 30f; //75f;
 
-    // --- Level looping state ---
     [SerializeField] private int levelsCompleted = 0;
 
-    // --- Used when saving score to the DB on death ---
     [SerializeField] private string playerName = "Player";
 
     private void Awake()

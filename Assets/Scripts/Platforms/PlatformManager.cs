@@ -39,7 +39,6 @@ public class PlatformManager : MonoBehaviour
         {
             GameManager.Instance.OnBossThreshold += HandleBossThreshold;
             GameManager.Instance.OnBossDefeated += HandleBossDefeated;
-
             Debug.Log("[PlatformManager] Subscribed to boss events.");
         }
         else
@@ -59,6 +58,16 @@ public class PlatformManager : MonoBehaviour
 
     public void SpawnNext(Transform platformGenerationPoint)
     {
+        if (PlatformManagerLevel2.Instance != null && PlatformManagerLevel2.Instance.IsActive)
+        {
+            GameObject snowPlatform = PlatformManagerLevel2.Instance.SpawnNext(platformGenerationPoint);
+            if (snowPlatform != null)
+            {
+                activePlatforms.AddLast(snowPlatform);
+                return;
+            }
+        }
+
         GameObject newPlatform = Instantiate(platformPrefab,
                                              platformGenerationPoint.position,
                                              Quaternion.identity);
@@ -113,6 +122,14 @@ public class PlatformManager : MonoBehaviour
     public void DestroyTail()
     {
         if (activePlatforms.Count == 0) return;
+
+        if (PlatformManagerLevel2.Instance != null && PlatformManagerLevel2.Instance.IsActive)
+        {
+            PlatformManagerLevel2.Instance.DestroyTail();
+            if (activePlatforms.Count > 0) activePlatforms.RemoveFirst();
+            return;
+        }
+
         GameObject tail = activePlatforms.First.Value;
         activePlatforms.RemoveFirst();
         Destroy(tail);
@@ -120,13 +137,13 @@ public class PlatformManager : MonoBehaviour
 
     private void HandleBossThreshold()
     {
-        Debug.Log("[PlatformManager] HandleBossThreshold called — boss platform will spawn next.");
+        Debug.Log("[PlatformManager] HandleBossThreshold — boss platform pending.");
         bossPlatformPending = true;
     }
 
     private void HandleBossDefeated()
     {
-        Debug.Log("[PlatformManager] HandleBossDefeated called — returning to normal platforms.");
+        Debug.Log("[PlatformManager] HandleBossDefeated — returning to normal / handing off to Level 2.");
         bossAlive = false;
         activeBoss = null;
     }

@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 1701208329439845877}
   - component: {fileID: 6227197749437346787}
   - component: {fileID: 7007536596218229135}
+  - component: {fileID: 8742525388529264572}
+  - component: {fileID: 5058930206399798204}
   m_Layer: 0
   m_Name: Boss_2
   m_TagString: Untagged
@@ -106,9 +108,51 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8742525388529264572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4238628104482884451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f54831737c8e924c830a26794019f98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BirdController
+  hoverDuration: 0.5
+  carryDuration: 3
+  descentSpeed: 8
+  liftSpeed: 5
+  carryHeight: 6
+  approachSpeedBonus: 10
+  overheadYOffset: 2.5
+  exitSpeed: 20
+--- !u!114 &5058930206399798204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4238628104482884451}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2255600220cffe343948f1cb7a445de4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SnowBossController
+  birdPrefab: {fileID: 4238628104482884451}
+  spawnInterval: 10
+  spawnBehindDistance: 10
+  spawnHeight: 8
+  bossDuration: 45
+  powerUpTimeBonus: 5
+  laneXPositions:
+  - -3
+  - 0
+  - 3

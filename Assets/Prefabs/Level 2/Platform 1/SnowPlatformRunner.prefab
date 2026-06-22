@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 3505957973033874299}
   - component: {fileID: 6659110285433367749}
   m_Layer: 6
-  m_Name: PlatformRunner
+  m_Name: SnowPlatformRunner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
