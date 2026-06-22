@@ -13,9 +13,21 @@ public class GameOverManager : MonoBehaviour
     private void Start()
     {
         Debug.Log($"GameOverManager Start() - Instance ID: {GetInstanceID()}");
-
         ShowFinalScore();
-        SetupButtons();
+        CheckButtonReferences();
+    }
+
+    private void CheckButtonReferences()
+    {
+        if (mainMenuButton == null)
+            Debug.LogError("Main Menu Button reference is NOT assigned in Inspector!");
+        else
+            Debug.Log("Main Menu Button reference is good.");
+
+        if (restartButton == null)
+            Debug.LogError("Restart Button reference is NOT assigned in Inspector!");
+        else
+            Debug.Log("Restart Button reference is good.");
     }
 
     private void ShowFinalScore()
@@ -25,34 +37,6 @@ public class GameOverManager : MonoBehaviour
             int finalScore = Mathf.RoundToInt(GameManager.Instance.Score);
             scoreDisplay.text = $"FINAL SCORE: {finalScore}";
         }
-    }
-
-    private void AutoSaveScore()
-    {
-        string playerName = GameManager.Instance.PlayerName;
-        if (string.IsNullOrWhiteSpace(playerName))
-            playerName = "Player";
-
-        int finalScore = Mathf.RoundToInt(GameManager.Instance.Score);
-
-        Debug.Log($"[AutoSave] About to save: {playerName} - {finalScore} | GameOverManager ID: {GetInstanceID()}");
-
-        DatabaseManager.Instance.SaveScore(playerName, finalScore, GameManager.Instance.levelsCompleted);
-
-        Debug.Log($"Auto-saved: {playerName} - {finalScore}");
-    }
-
-    private void SetupButtons()
-    {
-        if (mainMenuButton != null)
-            mainMenuButton.onClick.AddListener(GoToMainMenu);
-        else
-            Debug.LogError("Main Menu Button reference missing!");
-
-        if (restartButton != null)
-            restartButton.onClick.AddListener(RestartGame);
-        else
-            Debug.LogError("Restart Button reference missing!");
     }
 
     public void GoToMainMenu()
