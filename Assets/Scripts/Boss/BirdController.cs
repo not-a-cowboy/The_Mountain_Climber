@@ -18,6 +18,10 @@ public class BirdController : MonoBehaviour
     [Header("Exit")]
     [SerializeField] private float exitSpeed = 20f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource birdAudio;
+    [SerializeField] private AudioClip hawkSound;
+
     private enum State { Approaching, Hovering, Grabbing, Carrying, Dropping }
     private State state = State.Approaching;
 
@@ -45,6 +49,11 @@ public class BirdController : MonoBehaviour
 
         birdAnim = GetComponent<BirdAnimController>();
         if (birdAnim != null) birdAnim.PlayFlying();
+
+        if (birdAudio != null && hawkSound != null)
+        {
+            birdAudio.PlayOneShot(hawkSound);
+        }
 
         if (PlayerController.Instance != null)
         {

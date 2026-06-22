@@ -13,6 +13,8 @@ public class PlatformManagerLevel2 : MonoBehaviour
 
     [Header("Snow Boss")]
     public GameObject snowBossPrefab;
+    [Header("Level 2 Audio")]
+    [SerializeField] private AudioSource blizzardAudio;
 
     private bool active = false;
     private bool starterSpawned = false;
@@ -51,6 +53,7 @@ public class PlatformManagerLevel2 : MonoBehaviour
     private void Activate()
     {
         active = true;
+        if (blizzardAudio != null) blizzardAudio.Play();
         Debug.Log("[PlatformManagerLevel2] Activated — snow platforms will spawn next.");
     }
 

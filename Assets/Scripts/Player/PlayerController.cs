@@ -57,6 +57,10 @@ public class PlayerController : MonoBehaviour
     private bool obstacleCollisionIgnored = false;
     private float preBoostJumpMalt;
 
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource playerAudio;
+    [SerializeField] private AudioClip ClimbingSound; 
+
     private bool birdGrabbed = false;
     private Transform birdCarryPoint = null;
 
@@ -417,6 +421,8 @@ public class PlayerController : MonoBehaviour
         if (!isDead)
             DrainInputQueue();
 
+        HandleClimbingAudio();
+
         if (!isDead) return;
         if (deathFallTimer < deathPauseDuration)
         {
@@ -424,6 +430,32 @@ public class PlayerController : MonoBehaviour
             return;
         }
         rb.AddForce(new Vector3(0f, 0f, -deathFallForce), ForceMode.Acceleration);
+    }
+
+    private void HandleClimbingAudio()
+    {
+        if (playerAudio == null || ClimbingSound == null) return;
+
+        // The player is "climbing" as long as they are on the ground, alive, not launched, and not carried by a bird
+        bool isClimbing = isGrounded && !isDead && !isLaunched && !birdGrabbed;
+
+        if (isClimbing)
+        {
+            // If the sound isn't already playing, start it
+            if (!playerAudio.isPlaying)
+            {
+                playerAudio.clip = ClimbingSound;
+                playerAudio.Play();
+            }
+        }
+        else
+        {
+            // If they are in the air or dead, pause the sound
+            if (playerAudio.isPlaying && playerAudio.clip == ClimbingSound)
+            {
+                playerAudio.Pause();
+            }
+        }
     }
 
     private void FixedUpdate()
