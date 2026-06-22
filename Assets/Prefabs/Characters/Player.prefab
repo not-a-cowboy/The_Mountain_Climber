@@ -206,8 +206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d107d758fdf77a4f9e37a3ab89276a4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerGlow
-  playerRenderer: {fileID: 5238445062449767481}
-  legsRenderer: {fileID: 0}
+  playerRenderer: {fileID: 8320781411360386340}
+  legsRenderer: {fileID: 4171629745433519777}
   glowIntensity: 1.5
   glowAlpha: 0.5
 --- !u!114 &365394198548025193
@@ -333,6 +333,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 9086189280394258122}
   m_SourcePrefab: {fileID: 100100000, guid: 6d291c60aa03f6c47bfe67e2510c1bbb, type: 3}
+--- !u!137 &4171629745433519777 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4355559625274742999, guid: 6d291c60aa03f6c47bfe67e2510c1bbb, type: 3}
+  m_PrefabInstance: {fileID: 402673326080425590}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5899727019783226333 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6086227004279520683, guid: 6d291c60aa03f6c47bfe67e2510c1bbb, type: 3}
@@ -355,3 +360,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a71fce445e9de2140bd36c0c118e5e03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClimberAnimController
+--- !u!137 &8320781411360386340 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8570297151190684498, guid: 6d291c60aa03f6c47bfe67e2510c1bbb, type: 3}
+  m_PrefabInstance: {fileID: 402673326080425590}
+  m_PrefabAsset: {fileID: 0}
