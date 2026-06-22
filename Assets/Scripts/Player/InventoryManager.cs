@@ -14,7 +14,6 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private PlayerGlow playerGlow;
 
-    // 4 slots: 0=HigherJump, 1=Invulnerability, 2=ScoreMultiplier, 3=Launch
     private int[] counts = new int[4];
     private bool[] active = new bool[4];
     private float[] glowTimers = new float[4];          // remaining glow seconds per slot
@@ -30,7 +29,11 @@ public class InventoryManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        if (Instance != null && Instance != this) 
+        { 
+            Destroy(this); 
+            return; 
+        }
         Instance = this;
 
         playerInput = new PlayerInputActions();
@@ -47,6 +50,8 @@ public class InventoryManager : MonoBehaviour
 
     private void OnDisable()
     {
+        if (playerInput == null) return;
+
         playerInput.Player.UseSlot1.performed -= _ => TryActivate(0);
         playerInput.Player.UseSlot2.performed -= _ => TryActivate(1);
         playerInput.Player.UseSlot3.performed -= _ => TryActivate(2);
