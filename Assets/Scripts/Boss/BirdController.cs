@@ -45,7 +45,6 @@ public class BirdController : MonoBehaviour
         boss = ownerBoss;
         currentLaneIndex = laneIndex;
 
-        // Carry point setup
         GameObject cp = new GameObject("BirdCarryPoint");
         cp.transform.SetParent(transform);
         cp.transform.localPosition = Vector3.zero;

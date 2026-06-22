@@ -1,4 +1,5 @@
 using SQLite4Unity3d;
+using System;
 
 [Table("HighScores")]
 public class HighScoreEntry
@@ -16,5 +17,5 @@ public class HighScoreEntry
     public int LevelsCompleted { get; set; }
 
     [Column("Date")]
-    public string Date { get; set; } = System.DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm");
+    public string Date { get; set; } = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
 }
