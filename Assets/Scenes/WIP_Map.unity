@@ -4636,7 +4636,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d960dfa918049f4589d76b8bc0142e7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlatformManagerLevel2
-  snowPlatformStarterPrefab: {fileID: 3522748738960144463, guid: f683e54d9d03cad469b192dd6d00b76a, type: 3}
+  snowPlatformStarterPrefab: {fileID: 3522748738960144463, guid: c3a36a253fc987448aec990f760d05f7, type: 3}
   snowPlatformRunnerPrefab: {fileID: 3522748738960144463, guid: 20545174e61173f498ba0eb10bc3d312, type: 3}
   snowBossPrefab: {fileID: 4238628104482884451, guid: c4f3366ab09c43242a8b3b1b7cc330c0, type: 3}
 --- !u!4 &1331114201
