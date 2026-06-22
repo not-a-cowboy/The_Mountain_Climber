@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour
     private bool bossThresholdFired = false;
     private bool bossWarningFired = false;
 
-    private const float BossScoreThreshold = 80f;
-    private const float BossWarningThreshold = 75f;
+    private const float BossScoreThreshold = 30f;
+    private const float BossWarningThreshold = 30f;
 
     [SerializeField] public int levelsCompleted = 0;
 
@@ -77,8 +77,8 @@ public class GameManager : MonoBehaviour
     public void NotifyBossWarning() => OnBossWarning?.Invoke();
     public void NotifyBossDefeated()
     {
-        OnBossDefeated?.Invoke();
         levelsCompleted++;
+        OnBossDefeated?.Invoke();
     }
 
     public void NotifyObstaclePassed() => OnObstaclePassed?.Invoke();
@@ -109,6 +109,7 @@ public class GameManager : MonoBehaviour
         {
             return levelsCompleted;
         }
+
         return Random.Range(0, 2);
     }
 
