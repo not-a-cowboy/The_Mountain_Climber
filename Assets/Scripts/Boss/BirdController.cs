@@ -1,8 +1,12 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
+[RequireComponent(typeof(Collider))]
 public class BirdController : MonoBehaviour
 {
+    public event Action OnBirdFinished;
+
     [Header("Timing")]
     [SerializeField] private float hoverDuration = 0.5f;
     [SerializeField] private float carryDuration = 3.0f;
@@ -11,9 +15,9 @@ public class BirdController : MonoBehaviour
     [SerializeField] private float carryHeight = 6f;
 
     [Header("Approach")]
-    [SerializeField] private float approachSpeedBonus = 10f;
+    [SerializeField] private float approachSpeedBonus = 12f;
     [SerializeField] private float overheadYOffset = 2.5f;
-    private float someLaneTolerance = 1.0f;
+    [SerializeField] private float laneTolerance = 1.0f;
 
     [Header("Exit")]
     [SerializeField] private float exitSpeed = 20f;
@@ -27,21 +31,21 @@ public class BirdController : MonoBehaviour
 
     private float stateTimer = 0f;
     private bool playerLocked = false;
-
     private Transform carryPoint;
-
     private SnowBossController boss;
-
     private PlayerController playerController;
-    private PlayerHealth playerHealth;
-
     private BirdAnimController birdAnim;
 
-    public void Init(SnowBossController ownerBoss)
+    private Rigidbody rb;
+    private int currentLaneIndex;
+    private bool hasFinished;
+
+    public void Init(SnowBossController ownerBoss, int laneIndex)
     {
         boss = ownerBoss;
-        
+        currentLaneIndex = laneIndex;
 
+        // Carry point setup
         GameObject cp = new GameObject("BirdCarryPoint");
         cp.transform.SetParent(transform);
         cp.transform.localPosition = Vector3.zero;
@@ -51,31 +55,30 @@ public class BirdController : MonoBehaviour
         if (birdAnim != null) birdAnim.PlayFlying();
 
         if (birdAudio != null && hawkSound != null)
-        {
             birdAudio.PlayOneShot(hawkSound);
-        }
 
         if (PlayerController.Instance != null)
         {
             playerController = PlayerController.Instance;
-            playerHealth = playerController.GetComponent<PlayerHealth>();
         }
         else
         {
-            Debug.LogError("[Bird] PlayerController.Instance is null — bird cannot function.");
+            Debug.LogError("[Bird] PlayerController.Instance is null!");
         }
+
+        rb = GetComponent<Rigidbody>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
+        rb.useGravity = false;
+        rb.isKinematic = false;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (GameManager.Instance != null && GameManager.Instance.IsGameOver)
-        {
-            if (playerLocked) ReleasePlayer();
-            Destroy(gameObject);
-            return;
-        }
+        if (hasFinished || playerController == null) return;
 
-        if (playerController == null) return;
+        Vector3 pos = transform.position;
+        pos.x = boss.GetLaneX(currentLaneIndex);
+        transform.position = pos;
 
         switch (state)
         {
@@ -90,7 +93,6 @@ public class BirdController : MonoBehaviour
     private void UpdateApproaching()
     {
         Vector3 playerPos = playerController.RigidbodyPosition;
-
         Vector3 target = new Vector3(
             transform.position.x,
             playerPos.y + overheadYOffset,
@@ -100,11 +102,19 @@ public class BirdController : MonoBehaviour
         float playerSpeed = GetPlayerForwardSpeed();
         float moveSpeed = playerSpeed + approachSpeedBonus;
 
-        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, target, moveSpeed * Time.fixedDeltaTime);
+
+        if (transform.position.y > 1.5f)
+        {
+            Vector3 descendPos = transform.position;
+            descendPos.y = Mathf.MoveTowards(descendPos.y, 1f, descentSpeed * 0.6f * Time.fixedDeltaTime);
+            transform.position = descendPos;
+        }
 
         float distZ = Mathf.Abs(transform.position.z - playerPos.z);
         float distY = Mathf.Abs(transform.position.y - (playerPos.y + overheadYOffset));
-        if (distZ < 0.5f && distY < 0.5f)
+
+        if (distZ < 1.5f && distY < 2f)
         {
             state = State.Hovering;
             stateTimer = hoverDuration;
@@ -115,7 +125,6 @@ public class BirdController : MonoBehaviour
     private void UpdateHovering()
     {
         Vector3 playerPos = playerController.RigidbodyPosition;
-
         transform.position = new Vector3(
             transform.position.x,
             playerPos.y + overheadYOffset,
@@ -126,24 +135,24 @@ public class BirdController : MonoBehaviour
         if (stateTimer <= 0f)
         {
             state = State.Grabbing;
-            Debug.Log("[Bird] - Grabbing");
             if (birdAnim != null) birdAnim.PlayDiving();
+            Debug.Log("[Bird] - Grabbing");
         }
     }
 
     private void UpdateGrabbing()
     {
         Vector3 playerPos = playerController.RigidbodyPosition;
+        Vector3 newPos = transform.position;
+        newPos.z = playerPos.z;
+        newPos.y -= descentSpeed * Time.fixedDeltaTime;
 
-        transform.position = new Vector3(
-            transform.position.x,
-            transform.position.y - descentSpeed * Time.deltaTime,
-            playerPos.z
-        );
+        transform.position = newPos;
 
         float distX = Mathf.Abs(transform.position.x - playerPos.x);
         float distY = transform.position.y - playerPos.y;
-        if (distX <= someLaneTolerance && distY <= 0.6f)
+
+        if (distX <= laneTolerance && distY <= 0.8f)
         {
             GrabPlayer();
         }
@@ -152,50 +161,47 @@ public class BirdController : MonoBehaviour
     private void UpdateCarrying()
     {
         Vector3 playerPos = playerController.RigidbodyPosition;
-
         float targetY = playerPos.y + carryHeight;
-        if (transform.position.y < targetY)
-        {
-            transform.position = new Vector3(
-                transform.position.x,
-                transform.position.y + liftSpeed * Time.deltaTime,
-                transform.position.z
-            );
-        }
 
-        transform.position = new Vector3(
-            transform.position.x,
-            transform.position.y,
-            playerController.RigidbodyPosition.z
-        );
+        Vector3 newPos = transform.position;
+        newPos.y = Mathf.MoveTowards(newPos.y, targetY, liftSpeed * Time.fixedDeltaTime);
+        newPos.z = playerPos.z;
+
+        transform.position = newPos;
 
         stateTimer -= Time.deltaTime;
         if (stateTimer <= 0f)
         {
             state = State.Dropping;
             ReleasePlayer();
-            Debug.Log("[Bird] - Dropping (player released)");
+            Debug.Log("[Bird] - Dropping player");
         }
     }
 
     private void UpdateDropping()
     {
-        transform.position += (Vector3.forward + Vector3.up).normalized * exitSpeed * Time.deltaTime;
-
+        transform.position += (Vector3.forward + Vector3.up * 0.3f).normalized * exitSpeed * Time.deltaTime;
         stateTimer += Time.deltaTime;
+
         if (stateTimer > 3f)
-            Destroy(gameObject);
+            FinishBird();
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (state == State.Grabbing && other.CompareTag("Player"))
+        {
+            GrabPlayer();
+        }
     }
 
     private void GrabPlayer()
     {
         if (playerLocked) return;
+
         playerLocked = true;
-
-        Debug.Log("[Bird] Grabbed player.");
-
+        Debug.Log("[Bird] Player grabbed via trigger!");
         playerController.LockForBirdGrab(carryPoint);
-
         boss?.NotifyGrabStart();
 
         state = State.Carrying;
@@ -208,20 +214,29 @@ public class BirdController : MonoBehaviour
     {
         if (!playerLocked) return;
         playerLocked = false;
-
-        Debug.Log("[Bird] Released player.");
-
         playerController.ReleaseFromBirdGrab();
-
         boss?.NotifyGrabEnd();
-
         stateTimer = 0f;
     }
 
     private float GetPlayerForwardSpeed()
     {
-        Rigidbody rb = playerController.GetComponent<Rigidbody>();
-        if (rb != null) return Mathf.Abs(rb.linearVelocity.z);
-        return 10f;
+        if (playerController == null) return 10f;
+        Rigidbody rbPlayer = playerController.GetComponent<Rigidbody>();
+        return rbPlayer != null ? Mathf.Abs(rbPlayer.linearVelocity.z) : 10f;
+    }
+
+    private void FinishBird()
+    {
+        if (hasFinished) return;
+        hasFinished = true;
+        OnBirdFinished?.Invoke();
+        Destroy(gameObject, 0.5f);
+    }
+
+    private void OnDestroy()
+    {
+        if (carryPoint != null)
+            Destroy(carryPoint.gameObject);
     }
 }

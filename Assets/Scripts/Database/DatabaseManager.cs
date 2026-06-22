@@ -33,8 +33,7 @@ public class DatabaseManager : MonoBehaviour
         _db = new SQLiteConnection(dbPath, SQLiteOpenFlags.ReadWrite | SQLiteOpenFlags.Create);
         _db.CreateTable<HighScoreEntry>();
 
-        // Optional: Create index for faster sorting
-        _db.CreateIndex("HighScores", "Score", true);
+        _db.CreateIndex("HighScores", "Score", false);
     }
 
     public void SaveScore(string playerName, int score, int levelsCompleted = 0)
@@ -52,26 +51,51 @@ public class DatabaseManager : MonoBehaviour
             Date = System.DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss")
         };
 
-        _db.Insert(entry);
-
-        // Keep only top 10
-        var allScores = _db.Table<HighScoreEntry>()
-                           .OrderByDescending(x => x.Score)
-                           .ThenByDescending(x => x.Id)        // newer scores win ties
-                           .ToList();
-
-        if (allScores.Count > MaxHighScores)
+        try
         {
-            var toDelete = allScores.Skip(MaxHighScores);
-            foreach (var item in toDelete)
-                _db.Delete<HighScoreEntry>(item.Id);
+            _db.Insert(entry);
+            Debug.Log($"[Database] Score saved: {playerName} - {score}");
+        }
+        catch (SQLiteException ex)
+        {
+            Debug.LogWarning($"[Database] Insert failed: {ex.Message}");
+            if (ex.Result == SQLite3.Result.Constraint)
+            {
+                _db.InsertOrReplace(entry);
+                Debug.Log("[Database] Used InsertOrReplace");
+            }
+            else
+            {
+                Debug.LogError($"[Database] Unexpected error: {ex}");
+            }
         }
 
-        Debug.Log($"[Database] Score saved: {playerName} - {score}");
+        TrimToTop10();
+    }
+
+    private void TrimToTop10()
+    {
+        var allScores = _db.Table<HighScoreEntry>()
+                           .OrderByDescending(x => x.Score)
+                           .ThenByDescending(x => x.Id)
+                           .ToList();
+
+        if (allScores.Count <= MaxHighScores)
+            return;
+
+        var toDelete = allScores.Skip(MaxHighScores).ToList();
+
+        foreach (var item in toDelete)
+        {
+            _db.Delete<HighScoreEntry>(item.Id);
+            Debug.Log($"[Database] Deleted old score: {item.PlayerName} - {item.Score}");
+        }
+        PrintAllScores();
     }
 
     public List<HighScoreEntry> GetTopScores(int count = 10)
     {
+        PrintAllScores();
         return _db.Table<HighScoreEntry>()
                   .OrderByDescending(x => x.Score)
                   .ThenByDescending(x => x.Id)
@@ -88,5 +112,17 @@ public class DatabaseManager : MonoBehaviour
     private void OnDestroy()
     {
         _db?.Close();
+    }
+
+    public void PrintAllScores()
+    {
+        var all = _db.Table<HighScoreEntry>()
+                     .OrderByDescending(x => x.Score)
+                     .ThenByDescending(x => x.Id)
+                     .ToList();
+
+        Debug.Log($"Total scores in DB: {all.Count}");
+        foreach (var s in all)
+            Debug.Log($"#{s.Id} | {s.PlayerName} | {s.Score}");
     }
 }

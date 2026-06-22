@@ -7,141 +7,88 @@ public class SnowBossController : MonoBehaviour
     public event Action OnDefeated;
 
     [Header("Bird Prefab")]
-    [Tooltip("Prefab with BirdController attached.")]
     [SerializeField] private GameObject birdPrefab;
 
     [Header("Spawn Settings")]
-    [Tooltip("Seconds between bird spawns (resets after player is dropped).")]
-    [SerializeField] private float spawnInterval = 6f;
-    [Tooltip("How far behind the player (in Z) birds spawn.")]
-    [SerializeField] private float spawnBehindDistance = 20f;
-    [Tooltip("Height above the platform the bird spawns at.")]
+    [SerializeField] private float spawnBehindDistance = 25f;
     [SerializeField] private float spawnHeight = 8f;
 
     [Header("Boss Timer")]
     [SerializeField] private float bossDuration = 45f;
-    [SerializeField] private float powerUpTimeBonus = 5f;
 
     [Header("Lane Positions")]
     [SerializeField] private float[] laneXPositions = { -3f, 0f, 3f };
 
     private float bossTimer;
-    private float spawnTimer;
-    private bool playerGrabbed;
     private bool defeated;
     private bool defeatStarted;
-    private bool spawnOriginSet;
+    private bool active;
 
     private void Awake()
     {
         bossTimer = bossDuration;
-        spawnTimer = spawnInterval;
-    }
-
-    private void Start()
-    {
-        if (PlayerController.Instance == null)
-            Debug.LogError("[SnowBoss] PlayerController.Instance is null.");
     }
 
     public void InitSpawnOrigin()
     {
-        spawnOriginSet = true;
-        spawnTimer = spawnInterval;
-        Debug.Log("[SnowBoss] InitSpawnOrigin called — bird spawning active.");
+        active = true;
+        SpawnBird();
+        Debug.Log("[SnowBoss] Encounter started.");
     }
 
     private void Update()
     {
-        if (defeated) return;
-        if (!spawnOriginSet) return;
-        if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return;
-        if (PlayerController.Instance == null) return;
+        if (!active || defeated) return;
+        if (GameManager.Instance?.IsGameOver == true) return;
 
-        if (!playerGrabbed)
+        bossTimer -= Time.deltaTime;
+
+        if (bossTimer <= 0f && !defeatStarted)
         {
-            bossTimer -= Time.deltaTime;
-            if (bossTimer <= 0f && !defeatStarted)
-            {
-                defeatStarted = true;
-                StartCoroutine(DefeatSequence());
-                return;
-            }
-
-            spawnTimer -= Time.deltaTime;
-            if (spawnTimer <= 0f)
-            {
-                SpawnBird();
-                spawnTimer = spawnInterval;
-            }
+            defeatStarted = true;
+            StartCoroutine(DefeatSequence());
         }
     }
 
     private void SpawnBird()
     {
-        if (birdPrefab == null)
-        {
-            Debug.LogError("[SnowBoss] birdPrefab is not assigned!");
-            return;
-        }
-
-        if (PlayerController.Instance == null) return;
+        if (defeated || !active || birdPrefab == null) return;
 
         Vector3 playerPos = PlayerController.Instance.RigidbodyPosition;
         int laneIndex = GetClosestLane(playerPos.x);
         float spawnX = laneXPositions[laneIndex];
 
-        Vector3 spawnPos = new Vector3(
-            spawnX,
-            playerPos.y + spawnHeight,
-            playerPos.z + spawnBehindDistance
-        );
+        Vector3 spawnPos = new Vector3(spawnX, playerPos.y + spawnHeight, playerPos.z - spawnBehindDistance);
 
-        GameObject birdGO = Instantiate(birdPrefab, spawnPos, Quaternion.identity);
+        GameObject birdGO = Instantiate(birdPrefab, spawnPos, Quaternion.LookRotation(Vector3.forward));
         BirdController bird = birdGO.GetComponent<BirdController>();
 
         if (bird != null)
         {
-            bird.Init(this);
-            Debug.Log($"[SnowBoss] Bird spawned at {spawnPos}, lane {laneIndex}.");
+            bird.Init(this, laneIndex);
+            bird.OnBirdFinished += OnBirdFinished;
+            Debug.Log($"[SnowBoss] Bird spawned in lane {laneIndex} at X={spawnX}");
         }
         else
         {
-            Debug.LogError("[SnowBoss] birdPrefab is missing a BirdController component!");
+            Debug.LogError("[SnowBoss] Bird prefab missing BirdController!");
+            Destroy(birdGO);
         }
     }
 
-    public void NotifyGrabStart()
+    private void OnBirdFinished()
     {
-        playerGrabbed = true;
-        Debug.Log("[SnowBoss] Grab started — timers paused.");
-    }
-
-    public void NotifyGrabEnd()
-    {
-        playerGrabbed = false;
-        spawnTimer = spawnInterval;
-        Debug.Log("[SnowBoss] Grab ended — timers resumed, spawn timer reset.");
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("PowerUp"))
+        if (!defeated && !defeatStarted)
         {
-            bossTimer += powerUpTimeBonus;
-            Destroy(other.gameObject);
-            Debug.Log($"[SnowBoss] Absorbed power-up — boss timer now {bossTimer:F1}s");
+            SpawnBird();
         }
     }
 
     private IEnumerator DefeatSequence()
     {
         defeated = true;
-        Debug.Log("[SnowBoss] Defeat sequence started.");
-
-        if (GameManager.Instance != null)
-            GameManager.Instance.NotifyBossDefeated();
-
+        Debug.Log("[SnowBoss] Timer expired - defeating boss");
+        GameManager.Instance?.NotifyBossDefeated();
         OnDefeated?.Invoke();
 
         yield return new WaitForSeconds(2f);
@@ -155,8 +102,24 @@ public class SnowBossController : MonoBehaviour
         for (int i = 0; i < laneXPositions.Length; i++)
         {
             float d = Mathf.Abs(laneXPositions[i] - x);
-            if (d < minDist) { minDist = d; closest = i; }
+            if (d < minDist)
+            {
+                minDist = d;
+                closest = i;
+            }
         }
         return closest;
     }
+
+    // Public getter for lane positions
+    public float GetLaneX(int index)
+    {
+        if (index >= 0 && index < laneXPositions.Length)
+            return laneXPositions[index];
+        return 0f;
+    }
+
+    // Added missing methods
+    public void NotifyGrabStart() => Debug.Log("[SnowBoss] Player grabbed.");
+    public void NotifyGrabEnd() => Debug.Log("[SnowBoss] Player released.");
 }

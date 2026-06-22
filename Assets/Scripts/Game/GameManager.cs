@@ -24,8 +24,8 @@ public class GameManager : MonoBehaviour
     private bool bossThresholdFired = false;
     private bool bossWarningFired = false;
 
-    private const float BossScoreThreshold = 30f;
-    private const float BossWarningThreshold = 30f;
+    private const float BossScoreThreshold = 80f;
+    private const float BossWarningThreshold = 75f;
 
     [SerializeField] public int levelsCompleted = 0;
 
