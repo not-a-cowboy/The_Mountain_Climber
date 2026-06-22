@@ -122,14 +122,6 @@ public class PlatformManager : MonoBehaviour
     public void DestroyTail()
     {
         if (activePlatforms.Count == 0) return;
-
-        if (PlatformManagerLevel2.Instance != null && PlatformManagerLevel2.Instance.IsActive)
-        {
-            PlatformManagerLevel2.Instance.DestroyTail();
-            if (activePlatforms.Count > 0) activePlatforms.RemoveFirst();
-            return;
-        }
-
         GameObject tail = activePlatforms.First.Value;
         activePlatforms.RemoveFirst();
         Destroy(tail);

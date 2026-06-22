@@ -1,13 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// HOW TO WIRE UP:
-///   1. Assign SnowPlatformStarter and SnowPlatformRunner prefabs in the Inspector.
-///   2. Assign the SnowBoss prefab.
-///   3. This script sets PlatformManager.Instance's level-2 delegates automatically.
-///      PlatformManager.SpawnNext must be updated to call Level2Override when active
-///      (see the patch comment at the bottom of this file).
-/// </summary>
 public class PlatformManagerLevel2 : MonoBehaviour
 {
     public static PlatformManagerLevel2 Instance { get; private set; }
@@ -21,7 +14,6 @@ public class PlatformManagerLevel2 : MonoBehaviour
     [Header("Snow Boss")]
     public GameObject snowBossPrefab;
 
-    private LinkedList<GameObject> activePlatforms = new LinkedList<GameObject>();
     private bool active = false;
     private bool starterSpawned = false;
     private bool snowBossPending = false;
@@ -112,16 +104,7 @@ public class PlatformManagerLevel2 : MonoBehaviour
             }
         }
 
-        activePlatforms.AddLast(platform);
         return platform;
-    }
-
-    public void DestroyTail()
-    {
-        if (activePlatforms.Count == 0) return;
-        GameObject tail = activePlatforms.First.Value;
-        activePlatforms.RemoveFirst();
-        Object.Destroy(tail);
     }
 
     private void HandleSnowBossThreshold()
