@@ -60,6 +60,11 @@ public class GameManager : MonoBehaviour
         OnBossThreshold?.Invoke();
     }
 
+    public void NotifyBossWarning()
+    {
+        OnBossWarning?.Invoke();
+    }
+
     public void NotifyBossDefeated()
     {
         OnBossDefeated?.Invoke();
@@ -96,9 +101,9 @@ public class GameManager : MonoBehaviour
     {
         if (levelsCompleted < 2)
         {
-            return levelsCompleted; 
+            return levelsCompleted;
         }
-        return Random.Range(0, 2); 
+        return Random.Range(0, 2);
     }
 
     public void TriggerGameOver()
