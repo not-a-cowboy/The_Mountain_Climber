@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
@@ -11,26 +10,50 @@ public class LeaderboardUI : MonoBehaviour
 
     public void ShowLeaderboard()
     {
-        // Clear old rows
-        foreach (Transform child in contentParent)
+        if (contentParent == null)
         {
-            Destroy(child.gameObject);
+            Debug.LogError("Content Parent not assigned!");
+            return;
         }
 
-        List<HighScoreEntry> scores = DatabaseManager.Instance.GetTopScores(10);
+        if (rowPrefab == null)
+        {
+            Debug.LogError("Row Prefab not assigned!");
+            return;
+        }
+
+        ClearRows();
+
+        var scores = DatabaseManager.Instance.GetTopScores(10);
+
+        Debug.Log($" Loaded {scores.Count} high scores");
 
         for (int i = 0; i < scores.Count; i++)
         {
-            HighScoreEntry entry = scores[i];
+            var entry = scores[i];
             GameObject row = Instantiate(rowPrefab, contentParent);
 
-            TextMeshProUGUI[] texts = row.GetComponentsInChildren<TextMeshProUGUI>();
+            var texts = row.GetComponentsInChildren<TextMeshProUGUI>(true);
 
             if (texts.Length >= 3)
             {
-                texts[0].text = (i + 1).ToString() + ".";
+                texts[0].text = (i + 1) + ".";
                 texts[1].text = entry.PlayerName;
                 texts[2].text = entry.Score.ToString();
+            }
+        }
+    }
+
+    private void ClearRows()
+    {
+        if (contentParent == null) return;
+
+        for (int i = contentParent.childCount - 1; i >= 0; i--)
+        {
+            var child = contentParent.GetChild(i);
+            if (child != null && child.gameObject != rowPrefab)
+            {
+                Destroy(child.gameObject);
             }
         }
     }

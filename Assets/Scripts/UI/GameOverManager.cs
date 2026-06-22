@@ -43,7 +43,7 @@ public class GameOverManager : MonoBehaviour
         Debug.Log($"Score saved for {currentPlayerName}: {finalScore}");
     }
 
-    public void ShowLeaderboard() => MainMenuManager.Instance?.OpenLeaderboard(); // or handle directly
+    public void ShowLeaderboard() => MainMenuManager.Instance?.OpenLeaderboard();
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
