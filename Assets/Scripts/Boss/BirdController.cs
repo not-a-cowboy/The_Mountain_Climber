@@ -31,14 +31,20 @@ public class BirdController : MonoBehaviour
     private PlayerController playerController;
     private PlayerHealth playerHealth;
 
+    private BirdAnimController birdAnim;
+
     public void Init(SnowBossController ownerBoss)
     {
         boss = ownerBoss;
+        
 
         GameObject cp = new GameObject("BirdCarryPoint");
         cp.transform.SetParent(transform);
         cp.transform.localPosition = Vector3.zero;
         carryPoint = cp.transform;
+
+        birdAnim = GetComponent<BirdAnimController>();
+        if (birdAnim != null) birdAnim.PlayFlying();
 
         if (PlayerController.Instance != null)
         {
@@ -112,6 +118,7 @@ public class BirdController : MonoBehaviour
         {
             state = State.Grabbing;
             Debug.Log("[Bird] - Grabbing");
+            if (birdAnim != null) birdAnim.PlayDiving();
         }
     }
 
@@ -184,6 +191,8 @@ public class BirdController : MonoBehaviour
 
         state = State.Carrying;
         stateTimer = carryDuration;
+
+        if (birdAnim != null) birdAnim.PlayFlying();
     }
 
     private void ReleasePlayer()
