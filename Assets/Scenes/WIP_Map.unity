@@ -6402,58 +6402,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd39cc47a1b20ae41b2ad366b94879a7, type: 3}
---- !u!1 &1664145054
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1664145055}
-  - component: {fileID: 1664145056}
-  m_Layer: 0
-  m_Name: Boss2Manager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1664145055
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1664145054}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.02013, y: 0.61188, z: 23.6342}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1664145056
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1664145054}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2255600220cffe343948f1cb7a445de4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SnowBossController
-  birdPrefab: {fileID: 4238628104482884451, guid: c4f3366ab09c43242a8b3b1b7cc330c0, type: 3}
-  spawnBehindDistance: 20
-  spawnHeight: 8
-  bossDuration: 45
-  laneXPositions:
-  - -3
-  - 0
-  - 3
 --- !u!1 &1668991640
 GameObject:
   m_ObjectHideFlags: 0
@@ -8323,7 +8271,6 @@ SceneRoots:
   - {fileID: 1894027110}
   - {fileID: 1277453387}
   - {fileID: 2107832741}
-  - {fileID: 1664145055}
   - {fileID: 1485018698}
   - {fileID: 1547433613}
   - {fileID: 1331114201}
