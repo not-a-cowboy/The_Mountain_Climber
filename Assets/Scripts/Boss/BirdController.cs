@@ -13,6 +13,7 @@ public class BirdController : MonoBehaviour
     [Header("Approach")]
     [SerializeField] private float approachSpeedBonus = 10f;
     [SerializeField] private float overheadYOffset = 2.5f;
+    private float someLaneTolerance = 1.0f;
 
     [Header("Exit")]
     [SerializeField] private float exitSpeed = 20f;
@@ -124,8 +125,9 @@ public class BirdController : MonoBehaviour
             playerPos.z
         );
 
+        float distX = Mathf.Abs(transform.position.x - playerPos.x);
         float distY = transform.position.y - playerPos.y;
-        if (distY <= 0.6f)
+        if (distX <= someLaneTolerance && distY <= 0.6f)
         {
             GrabPlayer();
         }
