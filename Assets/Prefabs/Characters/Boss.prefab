@@ -166,8 +166,8 @@ MonoBehaviour:
   spawnHeightOffset: 1
   spawnIntervalZ: 10
   xFollowDelay: 0.5
-  bossDuration: 5
-  powerUpTimeBonus: 5
+  bossDuration: 30
+  powerUpTimeBonus: 2
   activationRange: 20
   playerSpeed: 8
   fallSpeed: 9.81
